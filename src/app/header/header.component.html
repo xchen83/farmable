@@ -1,0 +1,23 @@
+<div class="w-full h-[83px] bg-white border-b border-black flex items-center justify-between px-5 relative">
+    <!-- Menu Icon -->
+    <div class="w-9 h-9 bg-gray-300 rounded flex items-center justify-center cursor-pointer" (click)="toggleMenu()">
+        <span class="material-icons">menu</span>
+    </div>
+
+    <!-- Logo or App Name -->
+    <h1 class="text-xl font-bold">Farmable</h1>
+
+    <!-- Profile/Notification Icon -->
+    <div class="w-9 h-9 bg-gray-300 rounded flex items-center justify-center cursor-pointer">
+        <span class="material-icons">notifications</span>
+    </div>
+
+    <!-- Menu Section -->
+    <div *ngIf="menuOpen"
+        class="absolute top-[83px] left-0 w-[164px] h-[220px] bg-white border border-black p-4 shadow-lg">
+        <div class="text-black text-lg font-bold mb-4">Home</div>
+        <div class="text-black text-lg font-bold mb-4">Updated Inventory</div>
+        <div class="text-black text-lg font-bold mb-4">Order History</div>
+        <div class="text-black text-lg font-bold">Profile</div>
+    </div>
+</div>
