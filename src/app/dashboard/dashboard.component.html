@@ -1,58 +1,66 @@
-<div class="w-full h-screen bg-white px-4">
-    <!-- Date Section -->
-    <div class="bg-green-200 rounded-lg p-4 mb-6">
-        <h1 class="text-xl font-bold">Dec. 4th, Tuesday</h1>
-        <div class="flex justify-between mt-4">
-            <div class="bg-white p-4 rounded-md text-center">
-                <p class="text-gray-600 text-sm">Today’s Order</p>
-                <p class="text-4xl font-bold">15</p>
-            </div>
-            <div class="bg-white p-4 rounded-md text-center">
-                <p class="text-gray-600 text-sm">Pending Order</p>
-                <p class="text-4xl font-bold">10</p>
-            </div>
-            <div class="bg-white p-4 rounded-md text-center">
-                <p class="text-gray-600 text-sm">Total Shipment</p>
-                <p class="text-4xl font-bold">5</p>
-            </div>
-        </div>
+<div class="w-full max-w-md mx-auto bg-white p-4 flex flex-col gap-6">
+  <!-- Notifications -->
+  <div class="bg-gray-100 rounded-lg p-4 flex flex-col gap-4">
+    <div class="flex justify-between items-center">
+      <div class="text-lg font-bold text-gray-800">Notifications</div>
+      <div class="text-sm text-gray-500 cursor-pointer">See More</div>
     </div>
 
-    <!-- Urgent Notifications Section -->
-    <div class="mb-6">
-        <h2 class="text-xl font-bold flex items-center">
-            <span class="material-icons text-red-600 mr-2">notification_important</span>
-            Urgent Notification
-        </h2>
-        <div class="bg-red-100 p-4 rounded-lg mt-2">
-            <p>Low Inventory: Carrots (5 units remaining)</p>
+    <div class="flex flex-col gap-3">
+      <div *ngFor="let notification of notifications" class="p-3 bg-white rounded-lg flex justify-between items-center">
+        <div class="text-gray-800 text-sm md:text-base">{{ notification.text }}</div>
+        <div *ngIf="notification.type === 'low-inventory'"
+          class="px-3 py-1 bg-red-600 text-white text-xs md:text-sm rounded-full">
+          Low Inventory
         </div>
-        <div class="bg-yellow-100 p-4 rounded-lg mt-2">
-            <p>Order #12345 needs confirmation</p>
-        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Inventory Section -->
+  <div class="bg-gray-100 rounded-lg p-4 flex flex-col gap-4">
+    <div class="flex justify-between items-center">
+      <div class="text-lg font-bold text-gray-800">Inventory</div>
+      <div class="text-sm text-gray-500 cursor-pointer">See More</div>
     </div>
 
-    <!-- Recent Activity Section -->
-    <div>
-        <h2 class="text-xl font-bold mb-4">Recent Activity</h2>
-        <div class="bg-gray-100 p-4 rounded-lg flex justify-between items-center mb-4">
-            <div>
-                <p class="text-base font-semibold">Tomato 10kg</p>
-                <p class="text-sm text-gray-600">Order #12345</p>
-            </div>
-            <button class="bg-green-500 text-white px-4 py-2 rounded-md">Confirm Order</button>
-        </div>
-        <div class="bg-gray-100 p-4 rounded-lg flex justify-between items-center mb-4">
-            <div>
-                <p class="text-base font-semibold">Tomato 10kg</p>
-                <p class="text-sm text-gray-600">Order #12345</p>
-            </div>
-            <button class="bg-green-500 text-white px-4 py-2 rounded-md">Confirm Order</button>
-        </div>
+    <div class="grid gap-3">
+      <div *ngFor="let item of inventoryItems" class="p-3 bg-white rounded-lg border border-gray-200 flex flex-col">
+        <div class="text-md md:text-lg text-gray-800">{{ item.name }}</div>
+        <div class="text-sm md:text-base text-gray-600">Remaining: {{ item.remaining }}</div>
+      </div>
     </div>
 
-    <!-- Floating Button -->
-    <div class="fixed bottom-4 right-4 bg-black p-4 rounded-full">
-        <span class="material-icons text-white">add</span>
+    <div class="border border-gray-300"></div>
+
+    <button  class="w-full py-2 bg-white border border-gray-400 rounded-lg text-sm md:text-base font-medium">
+      Add Inventory
+    </button>
+  </div>
+
+  <!-- Product Section -->
+  <div class="bg-gray-100 rounded-lg p-4 flex flex-col gap-4">
+    <div class="flex justify-between items-center">
+      <div class="text-lg font-bold text-gray-800">Products</div>
+      <div class="text-sm text-gray-500 cursor-pointer">See More</div>
     </div>
+
+    <div class="grid gap-3">
+      <div *ngFor="let product of products"
+        class="p-3 bg-white rounded-lg border border-gray-200 flex items-center gap-4">
+        <img class="w-12 h-12 md:w-14 md:h-14 rounded-lg" [src]="product.image" />
+        <div class="flex flex-col">
+          <div class="text-md md:text-lg font-bold text-gray-800">{{ product.name }}</div>
+          <div class="text-sm md:text-base text-gray-600">SKU: {{ product.sku }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="border border-gray-300"></div>
+
+    <button class="w-full py-2 bg-white border border-gray-400 rounded-lg text-sm md:text-base font-medium" (click)="navigateToAddProduce()">
+      Add Product
+    </button>
+  </div>
+
 </div>
