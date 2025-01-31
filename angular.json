@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/farmable/browser",
+            "outputPath": "dist/farmable",
             "baseHref": "/",
             "index": "src/index.html",
             "browser": "src/main.ts",
