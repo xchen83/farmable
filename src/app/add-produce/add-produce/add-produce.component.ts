@@ -1,64 +1,71 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { FormsModule } from '@angular/forms'; // ✅ Import FormsModule
+import { ProductService } from '../../services/product.service';
+import { Product, PRODUCT_CATEGORIES } from '../../types/product.types';
 
 @Component({
   selector: 'app-add-produce',
   templateUrl: './add-produce.component.html',
   styleUrls: ['./add-produce.component.css'],
-    imports: [FormsModule], // ✅ Add FormsModule here
-
+  standalone: true,
+  imports: [CommonModule, FormsModule],
 })
 export class AddProduceComponent {
-  
-  productName: string = '';
-  category: string = '';
-  shelfLife: number = 7;
-  shelfLifeUnit: string = 'Days';
-  unlimitedShelfLife: boolean = false;
-  packUnit: string = '';
-  description: string = '';
-  productImage: string | null = '';
+  categories = PRODUCT_CATEGORIES;
 
-  constructor(private router: Router) { }
+  formData: Product = {
+    productName: '',
+    category: '',
+    shelfLife: 7,
+    shelfLifeUnit: 'Days',
+    unlimitedShelfLife: false,
+    packUnit: '',
+    description: null,
+    productImage: null
+  };
 
-  // ✅ Handle Image Upload
-  // onFileSelected(event: any) {
-  //   const file = event.target.files[0];
-  //   if (file) {
-  //     const reader = new FileReader();
-  //     reader.onload = (e: any) => {
-  //       this.productImage = e.target.result;
-  //     };
-  //     reader.readAsDataURL(file);
-  //   }
-  // }
+  loading = false;
+  errorMessage: string | null = null;
 
-  submitForm() {
-    // ✅ Basic form validation
-    if (!this.productName || !this.category || !this.packUnit) {
-      alert('Please fill out all required fields.');
+  constructor(
+    private productService: ProductService,
+    private router: Router
+  ) { }
+
+  submitForm(): void {
+    if (!this.isFormValid()) {
       return;
     }
 
-    // ✅ Log data before navigation (for debugging)
-    console.log('Form Submitted:', {
-      productName: this.productName,
-      category: this.category,
-      shelfLife: this.unlimitedShelfLife ? 'Unlimited' : `${this.shelfLife} ${this.shelfLifeUnit}`,
-      packUnit: this.packUnit,
-      description: this.description
-    });
+    this.loading = true;
+    this.errorMessage = null;
 
-    // ✅ Navigate to the "Added Product" confirmation page with form data
-    this.router.navigate(['/product/added-product'], {
-      queryParams: {
-        name: this.productName,
-        category: this.category,
-        shelfLife: this.unlimitedShelfLife ? 'Unlimited' : `${this.shelfLife} ${this.shelfLifeUnit}`,
-        packUnit: this.packUnit,
-        description: this.description
-      }
+    this.productService.addProduct(this.formData).subscribe({
+      next: this.handleSuccess.bind(this),
+      error: this.handleError.bind(this)
     });
+  }
+
+  private isFormValid(): boolean {
+    if (!this.formData.productName || !this.formData.category || !this.formData.packUnit) {
+      this.errorMessage = 'Please fill out all required fields.';
+      return false;
+    }
+    return true;
+  }
+
+  private handleSuccess(): void {
+    this.loading = false;
+    this.router.navigate(['/product'], {
+      queryParams: { refresh: Date.now().toString() }
+    });
+  }
+
+  private handleError(error: Error): void {
+    console.error('Error adding product:', error);
+    this.loading = false;
+    this.errorMessage = 'Failed to add product. Please try again.';
   }
 }

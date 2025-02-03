@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 @Component({
-  selector: 'app-dashboard',
+  selector: 'dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, RouterLink],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
 })
@@ -16,6 +16,11 @@ export class DashboardComponent {
   // Navigation method
   navigateToAddProduce() {
     this.router.navigate(['/add-produce']);
+  }
+
+  // Navigation method
+  navigateToAddInventory() {
+    this.router.navigate(['/add-inventory']);
   }
 
   // Data

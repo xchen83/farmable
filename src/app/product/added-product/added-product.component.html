@@ -1,73 +1,42 @@
-<div class="px-4 sm:px-6 lg:px-8">
-    <div class="sm:flex sm:items-center">
-        <div class="sm:flex-auto">
-            <h1 class="text-base font-semibold text-gray-900">🎉 Product Added Successfully!</h1>
-            <p class="mt-2 text-sm text-gray-700">Here are the details of the product you just added.</p>
-        </div>
-        <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-            <button (click)="navigateToAddProduct()" type="button"
-                class="block rounded-md bg-lime-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-xs hover:bg-lime-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-600">
-                Add Another Product
-            </button>
+<div class="container mx-auto p-4">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">Products</h2>
+        <button (click)="navigateToAddProduce()"
+            class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
+            Add New Product
+        </button>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="text-center py-8">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto"></div>
+        <p class="mt-4 text-gray-600">Loading products...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+        {{ errorMessage }}
+    </div>
+
+    <!-- Products Grid -->
+    <div *ngIf="!loading && !errorMessage" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div *ngFor="let product of products"
+            class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ product.productName }}</h3>
+            <div class="text-gray-600">
+                <p class="mb-2">Category: {{ product.category }}</p>
+                <p class="mb-2">Pack Unit: {{ product.packUnit }}</p>
+                <p *ngIf="!product.unlimitedShelfLife" class="mb-2">
+                    Shelf Life: {{ product.shelfLife }} {{ product.shelfLifeUnit }}
+                </p>
+                <p *ngIf="product.unlimitedShelfLife" class="mb-2">Unlimited Shelf Life</p>
+                <p class="mb-2">{{ product.description }}</p>
+            </div>
         </div>
     </div>
 
-    <!-- Product Details Table -->
-    <div class="mt-8 flow-root">
-        <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                <table class="min-w-full divide-y divide-gray-300">
-                    <thead>
-                        <tr>
-                            <th scope="col"
-                                class="py-3 pr-3 pl-4 text-left text-xs font-medium tracking-wide text-gray-500 uppercase sm:pl-0">
-                                Field</th>
-                            <th scope="col"
-                                class="px-3 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase">
-                                Value</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200 bg-white">
-                        <!-- Product Name -->
-                        <tr>
-                            <td class="py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-0">
-                                Product Name</td>
-                            <td class="px-3 py-4 text-sm whitespace-nowrap text-gray-500">{{ productName }}</td>
-                        </tr>
-
-                        <!-- Category -->
-                        <tr>
-                            <td class="py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-0">
-                                Category</td>
-                            <td class="px-3 py-4 text-sm whitespace-nowrap text-gray-500">{{ category }}</td>
-                        </tr>
-
-                        <!-- Shelf Life -->
-                        <tr>
-                            <td class="py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-0">Shelf
-                                Life</td>
-                            <td class="px-3 py-4 text-sm whitespace-nowrap text-gray-500">
-                                {{ unlimitedShelfLife ? 'Unlimited' : (shelfLife + ' ' + shelfLifeUnit) }}
-                            </td>
-                        </tr>
-
-                        <!-- Pack Unit -->
-                        <tr>
-                            <td class="py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-0">Pack
-                                Unit</td>
-                            <td class="px-3 py-4 text-sm whitespace-nowrap text-gray-500">{{ packUnit }}</td>
-                        </tr>
-
-                        <!-- Description -->
-                        <tr>
-                            <td class="py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-0">
-                                Description</td>
-                            <td class="px-3 py-4 text-sm whitespace-nowrap text-gray-500">{{ description || 'No
-                                description provided' }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+    <!-- No Products State -->
+    <div *ngIf="!loading && !errorMessage && products.length === 0" class="text-center py-8 text-gray-600">
+        No products available. Click "Add New Product" to add one.
     </div>
 </div>

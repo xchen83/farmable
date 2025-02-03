@@ -79,20 +79,41 @@
     <!-- Desktop Sidebar -->
     <div class="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-72 lg:flex-col border-r border-gray-200 bg-white px-6">
         <div class="flex h-16 items-center">
-            <img class="h-8 w-auto" src="https://i.ibb.co/Hfc0nWZz/logo.png"
+            <img class="h-32 w-auto" src="https://i.ibb.co/Hfc0nWZz/logo.png"
                 alt="Farmable logo">
         </div>
         <nav class="flex flex-1 flex-col">
-            <ul class="flex flex-1 flex-col gap-y-7">
+            <ul class="flex flex-1 flex-col gap-y-7 pl-4">
                 <li>
-                    <a href="#"
-                        class="flex items-center gap-x-3 p-2 text-sm font-semibold rounded-md bg-gray-50 text-lime-600">
-                        <svg class="w-6 h-6 text-lime-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-                        </svg>
-                        Dashboard
+                    <a href="#" class="flex items-center gap-x-3 p-2 text-sm font-semibold rounded-md  text-gray-700 hover:bg-gray-50 hover:text-lime-600 cursor-pointer">
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a (click)="navigateToAddInventory()" [class.text-lime-600]="isActive('/add-inventory')"
+                     class="flex items-center gap-x-3 p-2 text-sm font-semibold rounded-md  text-gray-700 hover:bg-gray-50 hover:text-lime-600 cursor-pointer">
+                         Inventory
+                    </a>
+                </li>
+                <li>
+                    <a (click)="navigateToProduct()" [class.text-lime-600]="isActive('/product')" 
+                    class="flex items-center gap-x-3 p-2 text-sm font-semibold rounded-md  text-gray-700 hover:bg-gray-50 hover:text-lime-600 cursor-pointer">
+                       Product
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="flex items-center gap-x-3 p-2 text-sm font-semibold rounded-md  text-gray-700 hover:bg-gray-50 hover:text-lime-600 cursor-pointer">
+                       Order
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="flex items-center gap-x-3 p-2 text-sm font-semibold rounded-md  text-gray-700 hover:bg-gray-50 hover:text-lime-600 cursor-pointer">
+                       Customer
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="flex items-center gap-x-3 p-2 text-sm font-semibold rounded-md  text-gray-700 hover:bg-gray-50 hover:text-lime-600 cursor-pointer">
+                    Setting
                     </a>
                 </li>
             </ul>
@@ -107,7 +128,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
             </svg>
         </button>
-        <div class="flex-1 text-sm font-semibold text-gray-900">Dashboard</div>
+        <div class="flex-1 text-sm font-semibold text-gray-900">Farmable</div>
         <a href="#">
             <img class="w-8 h-8 rounded-full"
                 src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"

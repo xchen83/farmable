@@ -1,9 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AddProduceComponent } from './add-produce/add-produce.component'; // Make sure this exists
+import { AddProduceComponent } from './add-produce/add-produce.component';
 
 const routes: Routes = [
-    { path: '', component: AddProduceComponent } // This ensures it loads when navigating to `/add-produce`
+    {
+        path: '',  // Empty path since the full path is defined in app-routing
+        component: AddProduceComponent
+    }
 ];
 
 @NgModule({

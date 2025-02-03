@@ -35,7 +35,7 @@ export class HeaderComponent {
   }
 
   navigateToProduct() {
-    this.router.navigate(['/product/added-product']);
+    this.router.navigate(['/product']);
   }
 
   isActive(route: string): boolean {

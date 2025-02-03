@@ -1,36 +1,54 @@
-import { Component } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router, ActivatedRoute } from '@angular/router';
+import { ProductService } from '../../services/product.service';
 
 @Component({
-  selector: 'app-added-product',
+  selector: 'added-product',
   templateUrl: './added-product.component.html',
-  styleUrls: ['./added-product.component.css']
+  styleUrls: ['./added-product.component.css'],
+  standalone: true,
+  imports: [CommonModule],
 })
-export class AddedProductComponent {
-  productName: string | null = '';
-  category: string | null = '';
-  shelfLife: number | null = null;
-  shelfLifeUnit: string | null = 'Days';
-  unlimitedShelfLife: boolean = false;
-  packUnit: string | null = '';
-  description: string | null = '';
+export class AddedProductComponent implements OnInit {
+  products: any[] = [];
+  loading = true;
+  errorMessage: string | null = null;
 
-  constructor(private route: ActivatedRoute, private router: Router) { }
+  // Inject Router and ProductService into the component
+  constructor(
+    private productService: ProductService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) { }
 
   ngOnInit() {
-    // ✅ Read query parameters passed from the form submission
+    // Listen for query param changes to refresh the list
     this.route.queryParams.subscribe(params => {
-      this.productName = params['name'];
-      this.category = params['category'];
-      this.shelfLife = params['shelfLife'] ? Number(params['shelfLife']) : null;
-      this.shelfLifeUnit = params['shelfLifeUnit'] || 'Days';
-      this.unlimitedShelfLife = params['unlimitedShelfLife'] === 'true';
-      this.packUnit = params['packUnit'];
-      this.description = params['description'];
+      this.loadProducts();
     });
   }
 
-  navigateToAddProduct() {
+  loadProducts() {
+    this.loading = true;
+    this.errorMessage = null;
+
+    this.productService.getProducts().subscribe({
+      next: (products) => {
+        this.products = products;
+        this.loading = false;
+        console.log('Products loaded:', products);
+      },
+      error: (error) => {
+        this.errorMessage = 'Failed to load products';
+        this.loading = false;
+        console.error('Error loading products:', error);
+      }
+    });
+  }
+
+  // Navigation method
+  navigateToAddProduce() {
     this.router.navigate(['/add-produce']);
   }
 }
