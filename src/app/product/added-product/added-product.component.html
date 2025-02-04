@@ -2,7 +2,7 @@
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold text-gray-800">Products</h2>
         <button (click)="navigateToAddProduce()"
-            class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
+            class="bg-lime-600 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
             Add New Product
         </button>
     </div>
@@ -20,33 +20,37 @@
 
     <!-- Products Grid -->
     <div *ngIf="!loading && !errorMessage" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div *ngFor="let product of products" class="border p-4 mb-4 rounded-lg">
-            <!-- View Mode -->
-            <div *ngIf="!product.isEditing">
-                <div class="flex justify-between items-center">
-                    <h3 class="text-lg font-semibold">{{product.productName}}</h3>
-                    <div class="space-x-2">
-                        <button (click)="startEdit(product)" class="text-blue-600 hover:text-blue-800">
-                            <fa-icon [icon]="faEdit"></fa-icon> Edit
-                        </button>
-                        <button (click)="deleteProduct(product.id)" class="text-red-600 hover:text-red-800">
-                            <fa-icon [icon]="faTrash"></fa-icon> Delete
-                        </button>
-                    </div>
+        <div *ngFor="let product of products"
+            class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+            <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ product.productName }}</h3>
+                    <span *ngIf="!product.unlimitedShelfLife && product.shelfLife !== null" [ngClass]="{
+                                        'bg-green-100 text-green-700': product.shelfLife >= 7,
+                                        'bg-orange-100 text-orange-700': product.shelfLife < 7 && product.shelfLife >= 4,
+                                        'bg-red-100 text-red-700': product.shelfLife < 4
+                                      }" class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium">
+                        Shelf Life: {{ product.shelfLife }} {{ product.shelfLifeUnit }}
+                    </span>
                 </div>
-                <div class="mt-2">
-                    <p><strong>Category:</strong> {{product.category}}</p>
-                    <p><strong>Pack Unit:</strong> {{product.packUnit}}</p>
-                    <p *ngIf="!product.unlimitedShelfLife">
-                        <strong>Shelf Life:</strong> {{product.shelfLife}} {{product.shelfLifeUnit}}
-                    </p>
-                    <p *ngIf="product.unlimitedShelfLife">
-                        <strong>Shelf Life:</strong> Unlimited
-                    </p>
-                    <p *ngIf="product.description">
-                        <strong>Description:</strong> {{product.description}}
-                    </p>
+                <!-- Add edit/delete buttons -->
+                <div class="flex gap-2">
+                    <button (click)="startEdit(product)" class="text-blue-600 hover:text-blue-800">
+                        <fa-icon [icon]="faEdit"></fa-icon>
+                    </button>
+                    <button (click)="deleteProduct(product.id)" class="text-red-600 hover:text-red-800">
+                        <fa-icon [icon]="faTrash"></fa-icon>
+                    </button>
                 </div>
+            </div>
+            <div class="text-gray-600">
+                <p class="mb-2">Category: {{ product.category }}</p>
+                <p class="mb-2">Pack Unit: {{ product.packUnit }}</p>
+                <p *ngIf="!product.unlimitedShelfLife" class="mb-2">
+                    Shelf Life: {{ product.shelfLife }} {{ product.shelfLifeUnit }}
+                </p>
+                <p *ngIf="product.unlimitedShelfLife" class="mb-2">Unlimited Shelf Life</p>
+                <p class="mb-2">{{ product.description }}</p>
             </div>
 
             <!-- Edit Mode -->
