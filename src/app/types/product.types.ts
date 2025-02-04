@@ -1,4 +1,5 @@
 export interface Product {
+    id?: number;
     productName: string;
     category: string;
     shelfLife: number | null;
@@ -11,9 +12,8 @@ export interface Product {
 
 export interface ProductResponse {
     success: boolean;
-    message: string;
-    newProduct: Product;
-    allProducts: Product[];
+    data?: Product | null;
+    error?: string;
 }
 
 export type ProductCategory = 'Fruits' | 'Vegetables' | 'Dairy';

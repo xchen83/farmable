@@ -16,18 +16,27 @@ export class ProductService {
     'Accept': 'application/json',
   });
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+    console.log('ProductService initialized with URL:', this.apiUrl);
+    this.testConnection();
+  }
 
-  addProduct(product: Product): Observable<ProductResponse> {
-    const sanitizedProduct = this.sanitizeProduct(product);
+  private testConnection() {
+    console.log('Testing API connection...');
+    this.http.get(this.apiUrl).subscribe({
+      next: (response) => console.log('API Test Success:', response),
+      error: (error) => console.error('API Test Error:', error)
+    });
+  }
 
-    return this.http.post<ProductResponse>(
-      this.apiUrl,
-      sanitizedProduct,
-      { headers: this.headers }
-    ).pipe(
+  // POST new product
+  addProduct(product: Product): Observable<any> {
+    return this.http.post<any>(this.apiUrl, product).pipe(
       tap(response => console.log('Product added:', response)),
-      catchError(this.handleError)
+      catchError(error => {
+        console.error('Error adding product:', error);
+        return throwError(() => error);
+      })
     );
   }
 
@@ -52,5 +61,13 @@ export class ProductService {
     const message = error.error?.message || 'An error occurred';
     console.error('API Error:', error);
     return throwError(() => new Error(message));
+  }
+
+  deleteProduct(id: number): Observable<ProductResponse> {
+    return this.http.delete<ProductResponse>(`${this.apiUrl}/${id}`);
+  }
+
+  updateProduct(id: number, product: Product): Observable<ProductResponse> {
+    return this.http.put<ProductResponse>(`${this.apiUrl}/${id}`, this.sanitizeProduct(product));
   }
 }

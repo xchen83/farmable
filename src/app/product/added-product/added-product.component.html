@@ -20,18 +20,98 @@
 
     <!-- Products Grid -->
     <div *ngIf="!loading && !errorMessage" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div *ngFor="let product of products"
-            class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-            <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ product.productName }}</h3>
-            <div class="text-gray-600">
-                <p class="mb-2">Category: {{ product.category }}</p>
-                <p class="mb-2">Pack Unit: {{ product.packUnit }}</p>
-                <p *ngIf="!product.unlimitedShelfLife" class="mb-2">
-                    Shelf Life: {{ product.shelfLife }} {{ product.shelfLifeUnit }}
-                </p>
-                <p *ngIf="product.unlimitedShelfLife" class="mb-2">Unlimited Shelf Life</p>
-                <p class="mb-2">{{ product.description }}</p>
+        <div *ngFor="let product of products" class="border p-4 mb-4 rounded-lg">
+            <!-- View Mode -->
+            <div *ngIf="!product.isEditing">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-semibold">{{product.productName}}</h3>
+                    <div class="space-x-2">
+                        <button (click)="startEdit(product)" class="text-blue-600 hover:text-blue-800">
+                            <fa-icon [icon]="faEdit"></fa-icon> Edit
+                        </button>
+                        <button (click)="deleteProduct(product.id)" class="text-red-600 hover:text-red-800">
+                            <fa-icon [icon]="faTrash"></fa-icon> Delete
+                        </button>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <p><strong>Category:</strong> {{product.category}}</p>
+                    <p><strong>Pack Unit:</strong> {{product.packUnit}}</p>
+                    <p *ngIf="!product.unlimitedShelfLife">
+                        <strong>Shelf Life:</strong> {{product.shelfLife}} {{product.shelfLifeUnit}}
+                    </p>
+                    <p *ngIf="product.unlimitedShelfLife">
+                        <strong>Shelf Life:</strong> Unlimited
+                    </p>
+                    <p *ngIf="product.description">
+                        <strong>Description:</strong> {{product.description}}
+                    </p>
+                </div>
             </div>
+
+            <!-- Edit Mode -->
+            <form *ngIf="product.isEditing" (ngSubmit)="saveEdit(product)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Product Name</label>
+                    <input [(ngModel)]="product.productName" name="productName"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Category</label>
+                    <select [(ngModel)]="product.category" name="category"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                        <option *ngFor="let cat of categories" [value]="cat">{{cat}}</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Pack Unit</label>
+                    <input [(ngModel)]="product.packUnit" name="packUnit"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                </div>
+
+                <div>
+                    <label class="flex items-center">
+                        <input type="checkbox" [(ngModel)]="product.unlimitedShelfLife" name="unlimitedShelfLife"
+                            class="rounded border-gray-300 text-blue-600">
+                        <span class="ml-2">Unlimited Shelf Life</span>
+                    </label>
+                </div>
+
+                <div *ngIf="!product.unlimitedShelfLife" class="flex space-x-4">
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-gray-700">Shelf Life</label>
+                        <input type="number" [(ngModel)]="product.shelfLife" name="shelfLife"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-gray-700">Unit</label>
+                        <select [(ngModel)]="product.shelfLifeUnit" name="shelfLifeUnit"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            <option value="Days">Days</option>
+                            <option value="Weeks">Weeks</option>
+                            <option value="Months">Months</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Description</label>
+                    <textarea [(ngModel)]="product.description" name="description"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
+                </div>
+
+                <div class="flex justify-end space-x-2">
+                    <button type="button" (click)="cancelEdit(product)"
+                        class="px-4 py-2 border rounded-md hover:bg-gray-50">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
