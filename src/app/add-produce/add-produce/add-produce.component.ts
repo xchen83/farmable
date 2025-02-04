@@ -86,22 +86,4 @@ export class AddProduceComponent {
     this.errorMessage = 'Failed to add product. Please try again.';
   }
 
-  testApi(): void {
-    console.log('Testing API...');
-    const testProduct: Product = {
-      productName: 'Test Product',
-      category: 'Vegetables',
-      shelfLife: 7,
-      shelfLifeUnit: 'Days',
-      unlimitedShelfLife: false,
-      packUnit: 'kg',
-      description: null,
-      productImage: null
-    };
-
-    this.productService.addProduct(testProduct).subscribe({
-      next: (response) => console.log('Test Success:', response),
-      error: (error) => console.error('Test Error:', error)
-    });
-  }
 }
