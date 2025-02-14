@@ -23,20 +23,29 @@ export class ProductService {
 
   private testConnection() {
     console.log('Testing API connection...');
-    this.http.get(this.apiUrl).subscribe({
+    this.http.get(this.apiUrl, { headers: this.headers }).subscribe({
       next: (response) => console.log('API Test Success:', response),
       error: (error) => console.error('API Test Error:', error)
     });
   }
 
   // POST new product
-  addProduct(product: Product): Observable<any> {
-    return this.http.post<any>(this.apiUrl, product).pipe(
-      tap(response => console.log('Product added:', response)),
-      catchError(error => {
-        console.error('Error adding product:', error);
-        return throwError(() => error);
-      })
+  addProduct(product: Product): Observable<ProductResponse> {
+    const sanitizedProduct = this.sanitizeProduct(product);
+    console.log('Sending sanitized product:', sanitizedProduct);
+    
+    return this.http.post<ProductResponse>(
+      this.apiUrl, 
+      sanitizedProduct, 
+      { headers: this.headers }
+    ).pipe(
+      tap(response => {
+        console.log('Server response:', response);
+        if (!response.success) {
+          throw new Error(response.error || 'Failed to add product');
+        }
+      }),
+      catchError(this.handleError)
     );
   }
 
@@ -48,26 +57,48 @@ export class ProductService {
   }
 
   private sanitizeProduct(product: Product): Product {
-    return {
+    const sanitized = {
       ...product,
-      description: product.description || null,
-      productImage: product.productImage || null,
+      description: product.description || '',
+      productImage: product.productImage || '',
       shelfLife: product.unlimitedShelfLife ? null : product.shelfLife,
       shelfLifeUnit: product.unlimitedShelfLife ? null : product.shelfLifeUnit,
     };
+    console.log('Sanitized product:', sanitized);
+    return sanitized;
   }
 
   private handleError(error: HttpErrorResponse) {
-    const message = error.error?.message || 'An error occurred';
     console.error('API Error:', error);
+    let message = 'An error occurred';
+    
+    if (error.error instanceof ErrorEvent) {
+      message = error.error.message;
+    } else if (typeof error.error === 'object' && error.error !== null) {
+      message = error.error.message || error.error.error || error.statusText;
+    }
+    
+    console.error('Error message:', message);
     return throwError(() => new Error(message));
   }
 
   deleteProduct(id: number): Observable<ProductResponse> {
-    return this.http.delete<ProductResponse>(`${this.apiUrl}/${id}`);
+    return this.http.delete<ProductResponse>(
+      `${this.apiUrl}/${id}`,
+      { headers: this.headers }
+    ).pipe(
+      catchError(this.handleError)
+    );
   }
 
   updateProduct(id: number, product: Product): Observable<ProductResponse> {
-    return this.http.put<ProductResponse>(`${this.apiUrl}/${id}`, this.sanitizeProduct(product));
+    const sanitizedProduct = this.sanitizeProduct(product);
+    return this.http.put<ProductResponse>(
+      `${this.apiUrl}/${id}`, 
+      sanitizedProduct,
+      { headers: this.headers }
+    ).pipe(
+      catchError(this.handleError)
+    );
   }
 }
