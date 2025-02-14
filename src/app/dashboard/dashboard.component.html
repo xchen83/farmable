@@ -1,66 +1,76 @@
-<div class="w-full max-w-md mx-auto bg-white p-4 flex flex-col gap-6">
-  <!-- Notifications -->
-  <div class="bg-gray-100 rounded-lg p-4 flex flex-col gap-4">
-    <div class="flex justify-between items-center">
-      <div class="text-lg font-bold text-gray-800">Notifications</div>
-      <div class="text-sm text-gray-500 cursor-pointer">See More</div>
+<div class="dashboard-container">
+  <app-header></app-header>
+
+  <!-- Notifications Section -->
+  <div class="notification-section">
+    <div class="section-header">
+      <div class="header-title">
+        <img src="assets/bell-02.svg" alt="Bell" />
+        <h4>Notification</h4>
+      </div>
+      <span class="see-more">See More</span>
     </div>
 
-    <div class="flex flex-col gap-3">
-      <div *ngFor="let notification of notifications" class="p-3 bg-white rounded-lg flex justify-between items-center">
-        <div class="text-gray-800 text-sm md:text-base">{{ notification.text }}</div>
-        <div *ngIf="notification.type === 'low-inventory'"
-          class="px-3 py-1 bg-red-600 text-white text-xs md:text-sm rounded-full">
-          Low Inventory
-        </div>
+    <div class="notification-list">
+      <div *ngFor="let notification of notifications" 
+           class="notification-item" 
+           [ngClass]="{'low-stock': notification.type === 'low-in-stock'}">
+        <p>{{notification.message}}</p>
+        <app-tag *ngIf="notification.type === 'low-in-stock'" type="low-in-stock"></app-tag>
       </div>
     </div>
   </div>
 
   <!-- Inventory Section -->
-  <div class="bg-gray-100 rounded-lg p-4 flex flex-col gap-4">
-    <div class="flex justify-between items-center">
-      <div class="text-lg font-bold text-gray-800">Inventory</div>
-      <div class="text-sm text-gray-500 cursor-pointer">See More</div>
+  <div class="section-container">
+    <div class="section-header">
+      <div class="header-title">
+        <img src="assets/file-02.svg" alt="File" />
+        <h4>Inventory</h4>
+      </div>
+      <span class="see-more">See More</span>
     </div>
 
-    <div class="grid gap-3">
-      <div *ngFor="let item of inventoryItems" class="p-3 bg-white rounded-lg border border-gray-200 flex flex-col">
-        <div class="text-md md:text-lg text-gray-800">{{ item.name }}</div>
-        <div class="text-sm md:text-base text-gray-600">Remaining: {{ item.remaining }}</div>
+    <div class="inventory-list">
+      <div *ngFor="let item of inventoryItems" class="inventory-item">
+        <h3>{{item.name}}</h3>
+        <p>Remaining: {{item.remaining}}</p>
       </div>
     </div>
 
-    <div class="border border-gray-300"></div>
+    <div class="divider"></div>
 
-    <button (click)="navigateToAddInventory()" class="w-full py-2 bg-white border border-gray-400 rounded-lg text-sm md:text-base font-medium">
-      Add Inventory
+    <button class="add-button">
+      <img src="assets/file-plus-02.svg" alt="Add" />
+      <span>Add Inventory</span>
     </button>
   </div>
 
-  <!-- Product Section -->
-  <div class="bg-gray-100 rounded-lg p-4 flex flex-col gap-4">
-    <div class="flex justify-between items-center">
-      <div class="text-lg font-bold text-gray-800">Products</div>
-      <div routerLink="product" class="text-sm text-gray-500 cursor-pointer">See More</div>
+  <!-- Products Section -->
+  <div class="section-container">
+    <div class="section-header">
+      <div class="header-title">
+        <img src="assets/package.svg" alt="Package" />
+        <h4>Product</h4>
+      </div>
+      <span class="see-more">See More</span>
     </div>
 
-    <div class="grid gap-3">
-      <div *ngFor="let product of products"
-        class="p-3 bg-white rounded-lg border border-gray-200 flex items-center gap-4">
-        <div class="flex flex-col">
-          <div class="text-md md:text-lg font-bold text-gray-800">{{ product.name }}</div>
-          <div class="text-sm md:text-base text-gray-600">SKU: {{ product.sku }}</div>
+    <div class="product-list">
+      <div *ngFor="let product of products" class="product-item">
+        <div class="product-image" [style.background-image]="'url(' + product.image + ')'"></div>
+        <div class="product-details">
+          <h5>{{product.name}}</h5>
+          <p>SKU: {{product.sku}}</p>
         </div>
       </div>
     </div>
 
-    <div class="border border-gray-300"></div>
+    <div class="divider"></div>
 
-    <button class="w-full py-2 bg-white border border-gray-400 rounded-lg text-sm md:text-base font-medium" 
-    (click)="navigateToAddProduce()">
-      Add Product
+    <button class="add-button">
+      <img src="assets/circle.svg" alt="Add" />
+      <span>Add Product</span>
     </button>
   </div>
-
 </div>
