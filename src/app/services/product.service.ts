@@ -1,73 +1,47 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
-import { Product, ProductResponse } from '../types/product.types';
+import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { Product } from '../types/product.types';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
-  private apiUrl = `${environment.apiUrl}/products`;
-
-  private headers = new HttpHeaders({
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-  });
-
-  constructor(private http: HttpClient) {
-    console.log('ProductService initialized with URL:', this.apiUrl);
-    this.testConnection();
-  }
-
-  private testConnection() {
-    console.log('Testing API connection...');
-    this.http.get(this.apiUrl).subscribe({
-      next: (response) => console.log('API Test Success:', response),
-      error: (error) => console.error('API Test Error:', error)
-    });
-  }
-
-  // POST new product
-  addProduct(product: Product): Observable<any> {
-    return this.http.post<any>(this.apiUrl, product).pipe(
-      tap(response => console.log('Product added:', response)),
-      catchError(error => {
-        console.error('Error adding product:', error);
-        return throwError(() => error);
-      })
-    );
-  }
+  constructor(private http: HttpClient) { }
 
   getProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(this.apiUrl, { headers: this.headers }).pipe(
-      tap(products => console.log('Products loaded:', products.length)),
-      catchError(this.handleError)
-    );
+    return this.http.get<{ success: boolean, data: Product[] }>(environment.apiUrl)
+      .pipe(
+        map(response => response.data),
+        catchError(this.handleError)
+      );
   }
 
-  private sanitizeProduct(product: Product): Product {
-    return {
-      ...product,
-      description: product.description || null,
-      productImage: product.productImage || null,
-      shelfLife: product.unlimitedShelfLife ? null : product.shelfLife,
-      shelfLifeUnit: product.unlimitedShelfLife ? null : product.shelfLifeUnit,
-    };
+  addProduct(product: Product): Observable<any> {
+    return this.http.post(environment.apiUrl, product)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  updateProduct(id: number, product: Product): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/${id}`, product)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  deleteProduct(id: number): Observable<any> {
+    return this.http.delete(`${environment.apiUrl}/${id}`)
+      .pipe(
+        catchError(this.handleError)
+      );
   }
 
   private handleError(error: HttpErrorResponse) {
-    const message = error.error?.message || 'An error occurred';
     console.error('API Error:', error);
-    return throwError(() => new Error(message));
-  }
-
-  deleteProduct(id: number): Observable<ProductResponse> {
-    return this.http.delete<ProductResponse>(`${this.apiUrl}/${id}`);
-  }
-
-  updateProduct(id: number, product: Product): Observable<ProductResponse> {
-    return this.http.put<ProductResponse>(`${this.apiUrl}/${id}`, this.sanitizeProduct(product));
+    return throwError(() => error);
   }
 }
