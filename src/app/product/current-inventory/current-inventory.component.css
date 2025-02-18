@@ -1,0 +1,377 @@
+.inventory-container {
+    padding: 20px;
+    background-color: white;
+}
+
+h1 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 20px;
+}
+
+.search-bar {
+    margin-bottom: 20px;
+}
+
+.search-input {
+    display: flex;
+    align-items: center;
+    background-color: #f9fafb;
+    border-radius: 8px;
+    padding: 12px 16px;
+}
+
+.search-input input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 0 10px;
+    font-size: 16px;
+    background: transparent;
+}
+
+.search-icon {
+    width: 20px;
+    height: 20px;
+    color: #6b7280;
+}
+
+.item-card {
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+
+.item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 20px;
+    background-color: white;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.item-title h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 4px 0;
+}
+
+.listing-status {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.listing-status .active {
+    color: #22c55e;
+    font-weight: 500;
+}
+
+.listing-status .draft {
+    color: #2563eb;  /* 蓝色 */
+}
+
+.modify-btn {
+    color: #22c55e;
+    background: none;
+    border: none;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0;
+}
+
+.inventory-records {
+    padding: 10px 20px;
+    background-color: white;
+    position: relative;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* 添加时间线的容器 */
+.record {
+    display: flex;
+    align-items: flex-start;
+    padding: 12px 0;
+    gap: 16px;
+    position: relative;
+}
+
+/* 时间线的虚线 */
+.inventory-records::before {
+    content: '';
+    position: absolute;
+    top: 28px;  /* 调整起点位置 */
+    left: 24px;  /* 与点的位置对齐 */
+    width: 2px;
+    height: calc(100% - 56px);  /* 减去上下padding */
+    border-left: 2px dashed #e5e7eb;  /* 浅灰色虚线 */
+    z-index: 0;
+}
+
+.record-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #22c55e;
+    border-radius: 50%;
+    margin-top: 8px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;  /* 确保点在虚线上面 */
+}
+
+.record-amount {
+    width: 140px;
+    font-weight: 500;
+}
+
+.record-info {
+    flex: 1;
+}
+
+.record-type {
+    font-weight: 500;
+    margin-bottom: 4px;  /* 添加一点间距 */
+}
+
+.record-detail {
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.record-date {
+    color: #6b7280;
+    font-size: 14px;
+    text-align: right;
+    width: 100px;
+}
+
+.item-details {
+    padding: 20px;
+    background-color: white;
+}
+
+.detail-row {
+    display: flex;
+    margin-bottom: 8px;
+}
+
+.detail-row:last-child {
+    margin-bottom: 0;
+}
+
+.detail-label {
+    width: 160px;
+    color: #111827;
+    font-weight: 500;
+}
+
+.detail-value {
+    color: #374151;
+}
+
+.item-images {
+    padding: 20px;
+    background-color: white;
+    display: flex;
+    gap: 12px;
+}
+
+.item-images img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.list-marketplace-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #22c55e;
+    color: white;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.header h1 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.header-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-add {
+    padding: 8px 16px;
+    background-color: #22c55e;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.btn-filter {
+    padding: 8px 16px;
+    background-color: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    color: #4b5563;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.inventory-table {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background-color: #f9fafb;
+    padding: 12px 16px;
+    text-align: left;
+    color: #6b7280;
+    font-weight: 500;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #e5e7eb;
+    color: #111827;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+.status-badge {
+    display: inline-flex;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.status-badge.normal {
+    background-color: #dcfce7;
+    color: #15803d;
+}
+
+.status-badge.warning {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.status-badge.danger {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+.btn-edit {
+    padding: 6px 12px;
+    background-color: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    color: #4b5563;
+    cursor: pointer;
+}
+
+.btn-edit:hover {
+    background-color: #f9fafb;
+    border-color: #d1d5db;
+}
+
+/* 如果有 List on Marketplace 按钮，给图片部分添加分隔线 */
+.item-card:has(.list-marketplace-btn) .item-images {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* 当商品状态为 Draft 时的特殊样式 */
+.item-card[data-status="Draft"] .item-details {
+    padding: 16px 20px;
+    background-color: white;
+    border-bottom: none;
+}
+
+.item-card[data-status="Draft"] .detail-row {
+    margin-bottom: 4px;  /* 减小行间距 */
+}
+
+.item-card[data-status="Draft"] .detail-label {
+    color: #111827;
+    font-weight: 500;
+}
+
+.item-card[data-status="Draft"] .detail-value {
+    color: #6b7280;
+}
+
+/* Draft 状态的图片容器 */
+.item-card[data-status="Draft"] .item-images {
+    padding: 20px;
+    background-color: white;
+    border-top: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* 移除重复的样式 */
+.draft-images {
+    display: none;
+}
+
+/* 移除重复的按钮样式 */
+.list-marketplace-btn {
+    width: 100%;
+    padding: 16px;
+    background-color: #22c55e;
+    color: white;
+    border: none;
+    font-weight: 500;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 0 0 8px 8px;
+}
+
+/* Draft 状态的特殊样式 */
+.draft-details {
+    padding: 20px;
+    background-color: #f9fafb;
+}
+
+.draft-details .detail-row {
+    display: flex;
+    margin-bottom: 12px;
+}
+
+.draft-details .detail-label {
+    width: 160px;
+    color: #111827;
+    font-weight: 600;
+}
+
+.draft-details .detail-value {
+    color: #6b7280;
+} 

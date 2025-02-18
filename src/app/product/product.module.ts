@@ -2,11 +2,17 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AddedProductComponent } from './added-product/added-product.component';
 import { RouterModule, Routes } from '@angular/router';
+import { CurrentInventoryComponent } from './current-inventory/current-inventory.component';
 
 const routes: Routes = [
   {
-    path: '',  // This matches the 'product' path from your main routing
-    component: AddedProductComponent
+    path: '',
+    redirectTo: 'inventory',
+    pathMatch: 'full'
+  },
+  {
+    path: 'inventory',
+    component: CurrentInventoryComponent
   }
 ];
 
