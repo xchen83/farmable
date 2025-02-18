@@ -27,15 +27,25 @@ export class HeaderComponent {
   }
 
   navigateToHome() {
-    this.router.navigate(['/']); // ✅ Navigates to Home
+    this.router.navigate(['/']);
   }
 
   navigateToAddInventory() {
-    this.router.navigate(['/add-inventory']);
+    this.router.navigate(['/product/inventory']);
   }
 
   navigateToProduct() {
     this.router.navigate(['/product']);
+  }
+
+  navigateToOrder(): void {
+    this.router.navigate(['/order']);
+    this.isSidebarOpen = false; // Close sidebar after navigation on mobile
+  }
+
+  navigateToSignIn(): void {
+    this.router.navigate(['/sign-in']);
+    this.isSidebarOpen = false;
   }
 
   isActive(route: string): boolean {
