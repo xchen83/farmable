@@ -1,0 +1,102 @@
+<div class="detail-container">
+    <div class="header">
+        <h1>{{restaurantName}}</h1>
+        <button class="btn-contact-buyer">
+            <span class="contact-icon">💬</span>
+            Contact Buyer
+        </button>
+    </div>
+
+    <div class="section-card">
+        <div class="section-title">
+            <h2>Order Detail (#{{orderId}})</h2>
+        </div>
+        <div class="section-content">
+            <div class="info-row">
+                <span class="info-label">Placed on:</span>
+                <span class="info-value">{{orderDate}}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Required by:</span>
+                <span class="info-value">{{requiredDate}}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Delivery method:</span>
+                <span class="info-value">{{deliveryMethod}}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Total order value:</span>
+                <span class="info-value">{{totalValue}}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <div class="section-title">
+            <h2>Customer Information</h2>
+        </div>
+        <div class="section-content">
+            <div class="info-row">
+                <span class="info-label">Customer type:</span>
+                <span class="info-value">{{customerType}}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Previous transactions:</span>
+                <span class="info-value">{{previousTransactions}}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <div class="section-title">
+            <h2>Request Item</h2>
+        </div>
+        <div class="section-content no-padding">
+            <table class="request-table" *ngFor="let item of requestItems">
+                <tr>
+                    <th>Product</th>
+                    <td>{{item.product}}</td>
+                </tr>
+                <tr>
+                    <th>Requested amount</th>
+                    <td>{{item.requestedAmount}}</td>
+                </tr>
+                <tr>
+                    <th>Inventory after order</th>
+                    <td>{{item.inventoryAfterOrder}}</td>
+                </tr>
+                <tr>
+                    <th>Fulfillment status</th>
+                    <td>
+                        <span class="status-icon" [class.status-success]="item.fulfillmentStatus" 
+                              [class.status-fail]="!item.fulfillmentStatus">
+                            {{item.fulfillmentStatus ? '✓' : '✕'}}
+                        </span>
+                    </td>
+                </tr>
+                <tr *ngIf="item.systemNote">
+                    <th>System note</th>
+                    <td class="system-note">{{item.systemNote}}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <div class="section-title">
+            <h2>Notes from buyer</h2>
+        </div>
+        <div class="section-content">
+            <p class="buyer-note">{{buyerNote}}</p>
+        </div>
+    </div>
+
+    <div class="warning-message" *ngIf="systemWarning">
+        {{systemWarning}}
+    </div>
+
+    <div class="action-buttons">
+        <button class="btn-contact" (click)="onContactBuyer()">Contact Buyer</button>
+        <button class="btn-accept" (click)="onAcceptOrder()">Accept Order</button>
+    </div>
+</div> 

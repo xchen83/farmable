@@ -1,0 +1,165 @@
+.detail-container {
+    padding: 20px;
+    background-color: white;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.header h1 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.btn-contact-buyer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    color: #22c55e;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.section-card {
+    margin-bottom: 16px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.section-title {
+    background-color: #f3f4f6;
+    padding: 16px;
+}
+
+.section-title h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.section-content {
+    padding: 16px;
+    background-color: white;
+}
+
+.section-content.no-padding {
+    padding: 0;
+}
+
+.info-row {
+    display: flex;
+    padding: 8px 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #111827;
+    width: 160px;
+}
+
+.info-value {
+    color: #374151;
+}
+
+.request-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0;  /* 移除表格底部间距 */
+    border: 1px solid #e5e7eb;
+}
+
+/* 只有当有多个表格时，给非最后一个表格添加底部间距 */
+.request-table:not(:last-child) {
+    margin-bottom: 16px;
+}
+
+.request-table th,
+.request-table td {
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #e5e7eb;
+}
+
+.request-table th {
+    color: #6b7280;
+    font-weight: normal;
+    width: 40%;
+    background-color: #f9fafb;
+}
+
+.request-table td {
+    background-color: white;
+}
+
+.status-icon {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.status-success {
+    color: #22c55e;
+}
+
+.status-fail {
+    color: #dc2626;
+}
+
+.system-note {
+    color: #dc2626;
+}
+
+.buyer-note {
+    margin: 0;
+    line-height: 1.5;
+}
+
+.warning-message {
+    color: #dc2626;
+    text-align: center;
+    margin: 24px 0;
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.btn-contact, .btn-accept {
+    padding: 12px;
+    border-radius: 999px;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    width: 100%;
+}
+
+.btn-contact {
+    background-color: white;
+    border: 1px solid #e5e7eb;
+    color: #111827;
+}
+
+.btn-accept {
+    background-color: #22c55e;
+    color: white;
+}
+
+.btn-accept:disabled {
+    background-color: #d1d5db;
+    cursor: not-allowed;
+} 

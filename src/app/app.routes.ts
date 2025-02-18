@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { CurrentInventoryComponent } from './product/current-inventory/current-inventory.component';
 
 export const routes: Routes = [
         { path: '', 
@@ -8,9 +9,14 @@ export const routes: Routes = [
         { path: 'add-produce', 
         loadChildren: () => import('./add-produce/add-produce.module').then(m => m.AddProduceModule) },
     
-        { path: 'add-inventory', 
-        loadChildren: () => import('./add-inventory/add-inventory.module').then(m => m.AddInventoryModule) },
-    
         { path: 'product', 
         loadChildren: () => import('./product/product.module').then(m => m.ProductModule) },
+
+        { path: 'order',
+        loadChildren: () => import('./order/order.module').then(m => m.OrderModule) },
+
+        {
+          path: 'inventory',
+          component: CurrentInventoryComponent
+        }
 ];
