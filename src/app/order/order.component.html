@@ -1,0 +1,86 @@
+<div class="filter-section">
+    <div class="dropdown-container">
+        <button class="dropdown-button">
+            {{selectedStatus}} ({{filteredCount}})
+            <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+        </button>
+        <!-- 下拉内容将通过JavaScript控制显示 -->
+    </div>
+
+    <div class="dropdown-container">
+        <button class="dropdown-button">
+            Sort by: {{selectedSort}}
+            <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+        </button>
+        <!-- 下拉内容将通过JavaScript控制显示 -->
+    </div>
+</div>
+
+<h1 class="page-title">Pending Acceptance ({{filteredCount}})</h1>
+
+<!-- Loading state -->
+<div *ngIf="isLoading" class="text-center py-4">
+    Loading orders...
+</div>
+
+<!-- Error state -->
+<div *ngIf="error" class="text-red-500 py-4 text-center">
+    {{ error }}
+</div>
+
+<!-- Orders list -->
+<div *ngIf="!isLoading && !error" class="space-y-4">
+    <div *ngFor="let order of orders" class="order-card">
+
+        <div class="order-header-section">
+            <div class="order-header">{{ order.customer.name }}</div>
+            <div class="order-subtext">Total transactions: {{ order.customer.transaction_count }} completed</div>
+            <!-- <span [class]="'px-2 py-1 rounded-full text-xs ' + getStatusClass(order.status)">
+                {{ order.status }}
+            </span> -->
+        </div>
+
+        <div class="order-content">
+            <div class="order-info">
+                <strong>Order #{{ order.order_id }}</strong><br>
+                <strong>Placed on:</strong> {{ formatDate(order.order_date) }}<br>
+                <strong>Required date:</strong> {{ formatDate(order.required_date) }} <br>
+                <strong>Total order value:</strong> {{ formatCurrency(order.total_amount) }}
+            </div>
+
+            <div class="table-container">
+                <table class="order-table">
+                    <tr>
+                        <th>Item</th>
+                        <th>Request</th>
+                        <th>Inventory</th>
+                        <th>Remaining</th>
+                        <th>Status</th>
+                        <th>System note</th>
+                    </tr>
+                    <tr *ngFor="let item of order.order_items">
+                        <td>{{ item.product.productName }}</td>
+                        <td>{{ item.requested_quantity }}{{ item.product.packUnit }}</td>
+                        <td>{{ item.fulfilled_quantity ?? 'fulfilled-quantity' }}{{ item.product.packUnit }}</td>
+                        <td>{{ item.remaining_quantity ?? 'remaining-quantity' }}{{ item.product.packUnit }}</td>
+                        <td class="status-icon" [ngClass]="{
+                            'status-success': item.status === 'completed',
+                            'status-fail': item.status === 'pending' || item.status === 'cancelled'
+                        }">
+                            {{ item.status === 'completed' ? '✓' : '×' }}
+                        </td>
+                        <td class="system-note" [ngClass]="{ 'error': item.system_note }">
+                            {{ item.system_note ?? 'N/A' }}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

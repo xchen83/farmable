@@ -1,15 +1,51 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {
+  faHouse,
+  faBoxArchive,
+  faClipboardList,
+  faHandshake,
+  faSignIn,
+  faGear,
+  faBell,
+  faChevronDown,
+  faChartLine,
+  faWallet,
+  faMessage,
+  faCircleQuestion,
+  faRightFromBracket,
+  faBars,
+  faXmark,
+  faUser
+} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FontAwesomeModule],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent {
+  // Icons
+  faHouse = faHouse;
+  faBoxArchive = faBoxArchive;
+  faClipboardList = faClipboardList;
+  faHandshake = faHandshake;
+  faSignIn = faSignIn;
+  faGear = faGear;
+  faBell = faBell;
+  faChevronDown = faChevronDown;
+  faChartLine = faChartLine;
+  faWallet = faWallet;
+  faMessage = faMessage;
+  faCircleQuestion = faCircleQuestion;
+  faRightFromBracket = faRightFromBracket;
+  faBars = faBars;
+  faXmark = faXmark;
+  faUser = faUser;
 
   isSidebarOpen = false;
   currentRoute: string = '';
@@ -45,6 +81,11 @@ export class HeaderComponent {
 
   navigateToSignIn(): void {
     this.router.navigate(['/sign-in']);
+    this.isSidebarOpen = false;
+  }
+
+  navigateToCustomer(): void {
+    this.router.navigate(['/customer']);
     this.isSidebarOpen = false;
   }
 

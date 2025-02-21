@@ -10,56 +10,98 @@
         <div class="relative flex w-full max-w-xs flex-1 bg-white shadow-lg">
             <!-- Close Button -->
             <div class="absolute top-0 left-full flex w-16 justify-center pt-5">
-                <button (click)="toggleSidebar()" class="-m-2.5 p-2.5">
+                <button (click)="toggleSidebar()"
+                    class="-m-2.5 p-2.5 hover:bg-gray-600 rounded-full transition-colors duration-200">
                     <span class="sr-only">Close sidebar</span>
-                    <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                    <fa-icon [icon]="faXmark" class="w-6 h-6 text-white"></fa-icon>
                 </button>
             </div>
 
             <!-- Sidebar Content -->
             <div class="flex flex-col w-full px-6 pb-2 overflow-y-auto bg-white">
-                <div class="flex h-16 items-center">
+                <div class="flex h-16 items-center border-b border-gray-100">
                     <img class="h-auto w-40" src="https://i.ibb.co/Hfc0nWZz/logo.png" alt="Farmable">
                 </div>
-                <nav class="flex flex-1 flex-col">
-                    <ul class="flex flex-1 flex-col gap-y-7">
+                <nav class="flex flex-1 flex-col pt-4">
+                    <ul class="flex flex-1 flex-col gap-y-1">
                         <li>
-                            <a (click)="navigateToHome()" [class.text-lime-600]="isActive('/home')"
-                                class="flex items-center gap-x-3 p-2 text-sm font-semibold rounded-md text-gray-700 hover:bg-gray-50 hover:text-lime-600 cursor-pointer">
-                                <i class="fa-light fa-list"></i>
+                            <a (click)="navigateToHome()" [class.bg-gray-50]="isActive('/home')"
+                                class="flex items-center gap-x-3 p-3 text-sm font-semibold rounded-lg text-gray-700 hover:bg-gray-50 hover:text-lime-600 cursor-pointer transition-all duration-200">
+                                <div class="w-5 flex justify-center">
+                                    <fa-icon [icon]="faHouse" class="text-gray-400"></fa-icon>
+                                </div>
                                 Home
                             </a>
                         </li>
                         <li>
-                            <a (click)="navigateToAddInventory()" [class.text-lime-600]="isActive('/prodct/inventory')"
-                                class="flex items-center gap-x-3 p-2 text-sm font-semibold rounded-md text-gray-700 hover:bg-gray-50 hover:text-lime-600 cursor-pointer">
-                                <i class="fa-light fa-list"></i>
+                            <a (click)="navigateToAddInventory()" [class.bg-gray-50]="isActive('/prodct/inventory')"
+                                class="flex items-center gap-x-3 p-3 text-sm font-semibold rounded-lg text-gray-700 hover:bg-gray-50 hover:text-lime-600 cursor-pointer transition-all duration-200">
+                                <div class="w-5 flex justify-center">
+                                    <fa-icon [icon]="faBoxArchive" class="text-gray-400"></fa-icon>
+                                </div>
                                 Inventory
                             </a>
                         </li>
                         <li>
-                            <a (click)="navigateToOrder()" [class.text-lime-600]="isActive('/order')"
-                                class="flex items-center gap-x-3 p-2 text-sm font-semibold rounded-md text-gray-700 hover:bg-gray-50 hover:text-lime-600 cursor-pointer">
-                                <i class="fa-light fa-list"></i>
+                            <a (click)="navigateToOrder()" [class.bg-gray-50]="isActive('/order')"
+                                class="flex items-center gap-x-3 p-3 text-sm font-semibold rounded-lg text-gray-700 hover:bg-gray-50 hover:text-lime-600 cursor-pointer transition-all duration-200">
+                                <div class="w-5 flex justify-center">
+                                    <fa-icon [icon]="faClipboardList" class="text-gray-400"></fa-icon>
+                                </div>
                                 Manage Order
                             </a>
                         </li>
+                        <!-- <li>
+                            <a
+                                class="flex items-center gap-x-3 p-3 text-sm font-semibold rounded-lg text-gray-700 hover:bg-gray-50 hover:text-lime-600 cursor-pointer transition-all duration-200">
+                                <div class="w-5 flex justify-center">
+                                    <fa-icon [icon]="faChartLine" class="text-gray-400"></fa-icon>
+                                </div>
+                                Analytics
+                            </a>
+                        </li> -->
+                        <!-- <li>
+                            <a
+                                class="flex items-center gap-x-3 p-3 text-sm font-semibold rounded-lg text-gray-700 hover:bg-gray-50 hover:text-lime-600 cursor-pointer transition-all duration-200">
+                                <div class="w-5 flex justify-center">
+                                    <fa-icon [icon]="faWallet" class="text-gray-400"></fa-icon>
+                                </div>
+                                Payments
+                            </a>
+                        </li> -->
                         <li>
-                            <a (click)="navigateToSignIn()" [class.text-lime-600]="isActive('/sign-in')"
-                                class="flex items-center gap-x-3 p-2 text-sm font-semibold rounded-md text-gray-700 hover:bg-gray-50 hover:text-lime-600 cursor-pointer">
-                                <i class="fa-light fa-sign-in"></i>
-                                Sign In
+                            <a (click)="navigateToCustomer()" [class.bg-gray-50]="isActive('/customer')"
+                                class="flex items-center gap-x-3 p-3 text-sm font-semibold rounded-lg text-gray-700 hover:bg-gray-50 hover:text-lime-600 cursor-pointer transition-all duration-200">
+                                <div class="w-5 flex justify-center">
+                                    <fa-icon [icon]="faHandshake" class="text-gray-400"></fa-icon>
+                                </div>
+                                Customers
                             </a>
                         </li>
-                        <li>
-                            <a
-                                class="flex items-center gap-x-3 p-2 text-sm font-semibold rounded-md text-gray-700 hover:bg-gray-50 hover:text-lime-600 cursor-pointer">
-                                <i class="fa-light fa-list"></i>
-                                Settings
-                            </a>
+                        <li class="mt-auto">
+                            <div class="space-y-1">
+                                <!-- <a
+                                    class="flex items-center gap-x-3 p-3 text-sm font-semibold rounded-lg text-gray-700 hover:bg-gray-50 hover:text-lime-600 cursor-pointer transition-all duration-200">
+                                    <div class="w-5 flex justify-center">
+                                        <fa-icon [icon]="faMessage" class="text-gray-400"></fa-icon>
+                                    </div>
+                                    Help Center
+                                </a> -->
+                                <a
+                                    class="flex items-center gap-x-3 p-3 text-sm font-semibold rounded-lg text-gray-700 hover:bg-gray-50 hover:text-lime-600 cursor-pointer transition-all duration-200">
+                                    <div class="w-5 flex justify-center">
+                                        <fa-icon [icon]="faGear" class="text-gray-400"></fa-icon>
+                                    </div>
+                                    Settings
+                                </a>
+                                <a
+                                    class="flex items-center gap-x-3 p-3 text-sm font-semibold rounded-lg text-red-600 hover:bg-red-50 cursor-pointer transition-all duration-200">
+                                    <div class="w-5 flex justify-center">
+                                        <fa-icon [icon]="faRightFromBracket" class="text-red-400"></fa-icon>
+                                    </div>
+                                    Sign Out
+                                </a>
+                            </div>
                         </li>
                     </ul>
                 </nav>
@@ -69,17 +111,27 @@
 
     <!-- Topbar -->
     <div class="sticky top-0 z-40 flex items-center gap-x-6 bg-white px-4 py-4 shadow-sm sm:px-6">
-        <button (click)="toggleSidebar()" class="-m-2.5 p-2.5 text-gray-700">
+        <button (click)="toggleSidebar()"
+            class="-m-2.5 p-2.5 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200">
             <span class="sr-only">Open sidebar</span>
-            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-            </svg>
+            <fa-icon [icon]="faBars" class="w-6 h-6"></fa-icon>
         </button>
-        <div class="flex-1 text-sm font-semibold text-gray-900">Farmable</div>
-        <a href="#">
-            <img class="w-8 h-8 rounded-full"
-                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                alt="">
-        </a>
+        <div class="flex-1 text-sm font-semibold text-gray-900">Dashboard</div>
+        <div class="flex items-center gap-x-4">
+            <button class="relative text-gray-500 hover:text-gray-700 transition-colors duration-200">
+                <fa-icon [icon]="faBell" class="text-xl"></fa-icon>
+                <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+            </button>
+            <button class="text-gray-500 hover:text-gray-700 transition-colors duration-200">
+                <fa-icon [icon]="faCircleQuestion" class="text-xl"></fa-icon>
+            </button>
+            <div class="h-6 w-px bg-gray-200"></div>
+            <button class="flex items-center gap-x-2 hover:bg-gray-50 p-1 rounded-lg transition-colors duration-200">
+                <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                    <fa-icon [icon]="faUser" class="text-gray-500"></fa-icon>
+                </div>
+                <fa-icon [icon]="faChevronDown" class="text-gray-400"></fa-icon>
+            </button>
+        </div>
     </div>
 </div>
