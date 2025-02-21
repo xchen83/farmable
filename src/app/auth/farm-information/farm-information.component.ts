@@ -12,30 +12,12 @@ import { FormsModule } from '@angular/forms';
       <img class="background-image" src="assets/img/0.png" alt="background" />
       
       <div class="progress-container">
-        <div class="progress-circle" [class.active]="true">
-          <div class="progress-ring" style="clip-path: circle(0% at 50% 50%)"></div>
-          <span class="progress-text">1</span>
+        <div class="progress-numbers">
+          <div class="number active">1</div>
+          <div class="number active">2</div>
+          <div class="number">3</div>
         </div>
-
-        <div class="progress-line">
-          <div class="progress-bar" style="width: 100%"></div>
-        </div>
-
-        <div class="progress-circle" [class.active]="true">
-          <div class="progress-ring" style="clip-path: circle(50% at 50% 50%)"></div>
-          <span class="progress-text">2</span>
-        </div>
-
-        <div class="progress-line">
-          <div class="progress-bar" style="width: 0%"></div>
-        </div>
-
-        <div class="progress-circle">
-          <div class="progress-ring" style="clip-path: circle(0% at 50% 50%)"></div>
-          <span class="progress-text">3</span>
-        </div>
-
-        <div class="register-header">
+        <div class="header-text">
           <h2>Farm Information</h2>
           <div class="step-info">
             <span class="next-label">Next:</span>
@@ -159,6 +141,58 @@ import { FormsModule } from '@angular/forms';
     .next-button {
       background-color: #A5C49C;
       color: white;
+    }
+
+    .progress-container {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .progress-numbers {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .number {
+      width: 40px;
+      height: 40px;
+      border: 2px solid #ddd;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 500;
+      font-size: 16px;
+    }
+
+    .number.active {
+      border-color: #4CAF50;
+      color: #4CAF50;
+    }
+
+    .header-text {
+      text-align: center;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .step-info {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      color: #666;
+      font-size: 14px;
     }
   `]
 })
