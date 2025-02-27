@@ -47,7 +47,7 @@
 
 .back-button {
   background-color: white;
-  border: 1px solid #E0E0E0;
+  border: 1px solid #e0e0e0;
 }
 
 .back-button:hover {
@@ -56,7 +56,7 @@
 }
 
 .next-button {
-  background-color: #A5C49C;
+  background-color: #a5c49c;
   color: white;
 }
 
@@ -76,7 +76,7 @@
 
 /* Add specific styles for the second frame-2 (Sign up button) */
 .frame-2:last-child {
-  background-color: #A5C49C;
+  background-color: #a5c49c;
   border: none;
 }
 
@@ -128,32 +128,34 @@
 }
 
 .logo-pic {
-      width: 200px;
-      height: auto;
-      margin-bottom: 20px;
-      object-fit: contain;
-    }
-    .button-container {
-      display: flex;
-      gap: 16px;
-      margin-top: 32px;
-      width: 100%;
-    }
-       .back-button,
-    .next-button {
-      flex: 1;
-      padding: 16px;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 500;
-      cursor: pointer;
-    }
-    .back-button {
-      background-color: white;
-      border: 1px solid #E0E0E0;
-    }
-    .next-button {
-      background-color: #A5C49C;
-      color: white;
-    }
+  width: 200px;
+  height: auto;
+  margin-bottom: 20px;
+  object-fit: contain;
+}
+
+.button-container {
+  display: flex;
+  gap: 16px;
+  margin-top: 32px;
+  width: 100%;
+}
+
+.back-button,
+.next-button {
+  flex: 1;
+  padding: 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.back-button {
+  background-color: white;
+  border: 1px solid #e0e0e0;
+}
+.next-button {
+  background-color: #2E872B;
+  color: white;
+}

@@ -6,6 +6,8 @@
     flex-direction: column;
     align-items: center;
     padding: 2rem;
+    padding-top: 0;
+    margin: 0px;
     background-color: white;
 }
 
@@ -165,12 +167,12 @@ input {
 }
 
 .next-button {
-    background-color: #A5C49C;
+    background-color: #2E872B;
     color: white;
 }
 
 .next-button:hover {
-    background-color: #95b48c;
+    background-color: #000000;
 }
 
 .step-info {

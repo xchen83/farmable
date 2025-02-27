@@ -22,8 +22,7 @@ interface Section {
   imports: [CommonModule, FormsModule],
   template: `
     <div class="register-container">
-      <img class="background-image" src="assets/img/0.png" alt="background" />
-      
+    <img class="background-image fixed inset-0 w-screen h-screen object-cover -z-10" src="assets/img/0.png" alt="background" />
       <div class="progress-container">
         <div class="progress-circle" [class.active]="true">
           <div class="progress-ring" style="clip-path: circle(100% at 50% 50%)"></div>
@@ -261,7 +260,7 @@ interface Section {
       border: 1px solid #ddd;
     }
     .finish-button {
-      background: #A5C49C;
+      background: #2E872B;
       color: white;
     }
     .content {

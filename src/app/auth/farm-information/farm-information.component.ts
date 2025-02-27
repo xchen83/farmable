@@ -122,7 +122,7 @@ import { FormsModule } from '@angular/forms';
       border: 1px solid #E0E0E0;
     }
     .next-button {
-      background-color: #A5C49C;
+      background-color: #2E872B !important;
       color: white;
     }
     .progress-container {

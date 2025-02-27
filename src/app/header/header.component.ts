@@ -63,7 +63,7 @@ export class HeaderComponent {
   }
 
   navigateToHome() {
-    this.router.navigate(['/']);
+    this.router.navigate(['/dashboard']);
   }
 
   navigateToAddInventory() {

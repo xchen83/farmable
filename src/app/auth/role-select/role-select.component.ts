@@ -51,10 +51,11 @@ import { CommonModule } from '@angular/common';
     }
     .background-image {
       position: absolute;
-      width: 100%;
-      height: 100%;
+      width: 120%;
+      height: 120%%;
       object-fit: cover;
       z-index: 0;
+      padding:0;
     }
     .role-select-container {
       position: relative;
