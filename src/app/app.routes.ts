@@ -4,8 +4,13 @@ import { CurrentInventoryComponent } from './product/current-inventory/current-i
 
 export const routes: Routes = [
   {
-    path: 'sign-in',
-    loadComponent: () => import('./auth/sign-in/sign-in.component').then(m => m.SignInComponent)
+    path: '',
+    loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule)
+  },
+
+  {
+    path: 'auth',
+    loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule)
   },
 
   {

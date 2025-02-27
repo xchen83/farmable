@@ -1,0 +1,89 @@
+.role-select-container {
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  padding: 2rem;
+
+  gap: 2rem;
+
+}
+
+
+
+
+.header {
+
+  text-align: center;
+
+}
+
+
+
+
+.role-options {
+
+  display: flex;
+
+  gap: 2rem;
+
+  justify-content: center;
+
+}
+
+
+
+
+.role-button {
+
+  padding: 2rem 4rem;
+
+  border: none;
+
+  border-radius: 8px;
+
+  background-color: #f5f5f5;
+
+  cursor: pointer;
+
+  transition: all 0.3s ease;
+
+}
+
+
+
+
+.role-button:hover {
+
+  background-color: #e0e0e0;
+
+  transform: translateY(-2px);
+
+}
+
+
+
+
+.role-content {
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+}
+
+
+
+
+.role-title {
+
+  font-size: 1.2rem;
+
+  font-weight: 500;
+
+} 
