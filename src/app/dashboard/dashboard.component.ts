@@ -29,6 +29,9 @@ export class DashboardComponent {
     }
   ];
 
+  // Add this property to your component
+  showEmptyState: boolean = true; // Set to true to see the empty state
+
   constructor(private router: Router) {
     // Set current date in format: Thursday, February 20, 2025
     this.setCurrentDate();
