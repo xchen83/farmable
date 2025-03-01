@@ -1,36 +1,31 @@
 <div class="register-container">
     <img class="background-image" src="assets/img/0.png" alt="background" />
-    <div class="progress-container pt-6 pb-0">
-        <!-- First circle -->
-        <div class="progress-circle" [class.active]="progress >= 1">
-            <div class="progress-ring" [style.clip-path]="progressClipPath(1)"></div>
-            <span class="progress-text">1</span>
-        </div>
-        <!-- Progress line 1-2 -->
-        <div class="progress-line">
-            <div class="progress-bar" [style.width.%]="progress >= 2 ? 100 : 0"></div>
-        </div>
-        <!-- Second circle -->
-        <div class="progress-circle" [class.active]="progress >= 2">
-            <div class="progress-ring" [style.clip-path]="progressClipPath(2)"></div>
-            <span class="progress-text">2</span>
-        </div>
-        <!-- Progress line 2-3 -->
-        <div class="progress-line">
-            <div class="progress-bar" [style.width.%]="progress >= 3 ? 100 : 0"></div>
-        </div>
-        <!-- Third circle -->
-        <div class="progress-circle" [class.active]="progress >= 3">
-            <div class="progress-ring" [style.clip-path]="progressClipPath(3)"></div>
-            <span class="progress-text">3</span>
+    <div class="progress-container">
+        <div class="progress-bar-wrapper">
+            <div class="progress-circle" [class.active]="progress >= 1">
+                <div class="progress-ring" [style.clip-path]="progressClipPath(progress >= 1 ? 3 : 0)"></div>
+                <span class="progress-text">1</span>
+            </div>
+            <div class="progress-line">
+                <div class="progress-bar" [style.width]="progress >= 2 ? '100%' : '0%'"></div>
+            </div>
+            <div class="progress-circle" [class.active]="progress >= 2">
+                <div class="progress-ring" [style.clip-path]="progressClipPath(progress >= 2 ? 3 : 0)"></div>
+                <span class="progress-text">2</span>
+            </div>
+            <div class="progress-line">
+                <div class="progress-bar" [style.width]="progress >= 3 ? '100%' : '0%'"></div>
+            </div>
+            <div class="progress-circle" [class.active]="progress >= 3">
+                <div class="progress-ring" [style.clip-path]="progressClipPath(progress >= 3 ? 3 : 0)"></div>
+                <span class="progress-text">3</span>
+            </div>
         </div>
         <div class="register-header">
-            <h2>Register</h2>
+            <h2>{{ getCurrentStepTitle() }}</h2>
             <div class="step-info">
                 <span class="next-label">Next:</span>
-                <span class="step-detail" *ngIf="progress === 1">Farm Information</span>
-                <span class="step-detail" *ngIf="progress === 2">Business Details</span>
-                <span class="step-detail" *ngIf="progress === 3">Review</span>
+                <span class="step-detail">{{ getNextStepName() }}</span>
             </div>
         </div>
     </div>
