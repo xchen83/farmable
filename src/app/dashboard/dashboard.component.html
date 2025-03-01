@@ -1,66 +1,69 @@
-<div class="w-full max-w-md mx-auto bg-white p-4 flex flex-col gap-6">
-  <!-- Notifications -->
-  <div class="bg-gray-100 rounded-lg p-4 flex flex-col gap-4">
-    <div class="flex justify-between items-center">
-      <div class="text-lg font-bold text-gray-800">Notifications</div>
-      <div class="text-sm text-gray-500 cursor-pointer">See More</div>
-    </div>
-
-    <div class="flex flex-col gap-3">
-      <div *ngFor="let notification of notifications" class="p-3 bg-white rounded-lg flex justify-between items-center">
-        <div class="text-gray-800 text-sm md:text-base">{{ notification.text }}</div>
-        <div *ngIf="notification.type === 'low-inventory'"
-          class="px-3 py-1 bg-red-600 text-white text-xs md:text-sm rounded-full">
-          Low Inventory
-        </div>
-      </div>
+<div class="dashboard-container">
+  <!-- Header with welcome message only -->
+  <div class="header">
+    <div class="welcome-section">
+      <h1>Welcome, <span class="farm-name">{{farmName}}</span></h1>
+      <p class="date">{{currentDate}}</p>
     </div>
   </div>
-
-  <!-- Inventory Section -->
-  <div class="bg-gray-100 rounded-lg p-4 flex flex-col gap-4">
-    <div class="flex justify-between items-center">
-      <div class="text-lg font-bold text-gray-800">Inventory</div>
-      <div class="text-sm text-gray-500 cursor-pointer">See More</div>
-    </div>
-
-    <div class="grid gap-3">
-      <div *ngFor="let item of inventoryItems" class="p-3 bg-white rounded-lg border border-gray-200 flex flex-col">
-        <div class="text-md md:text-lg text-gray-800">{{ item.name }}</div>
-        <div class="text-sm md:text-base text-gray-600">Remaining: {{ item.remaining }}</div>
-      </div>
-    </div>
-
-    <div class="border border-gray-300"></div>
-
-    <button (click)="navigateToAddInventory()" class="w-full py-2 bg-white border border-gray-400 rounded-lg text-sm md:text-base font-medium">
-      Add Inventory
+  
+  <!-- Quick access buttons -->
+  <div class="quick-access">
+    <button class="quick-button" (click)="navigateToAddInventory()">
+      <img src="/assets/img/vector.svg" alt="Inventory Icon" class="button-icon">
+      <span>Check Inventory</span>
+    </button>
+    <button class="quick-button">
+      <img src="/assets/img/vector2.svg" alt="Order Icon" class="button-icon">
+      <span>Manage Order</span>
     </button>
   </div>
-
-  <!-- Product Section -->
-  <div class="bg-gray-100 rounded-lg p-4 flex flex-col gap-4">
-    <div class="flex justify-between items-center">
-      <div class="text-lg font-bold text-gray-800">Products</div>
-      <div routerLink="product" class="text-sm text-gray-500 cursor-pointer">See More</div>
+  
+  <!-- Inventory overview section -->
+  <div class="dashboard-section">
+    <div class="section-header" (click)="toggleInventorySection()">
+      <h2>Inventory Stock Overview</h2>
+      <span class="chevron" [class.expanded]="inventoryExpanded">▼</span>
     </div>
-
-    <div class="grid gap-3">
-      <div *ngFor="let product of products"
-        class="p-3 bg-white rounded-lg border border-gray-200 flex items-center gap-4">
-        <div class="flex flex-col">
-          <div class="text-md md:text-lg font-bold text-gray-800">{{ product.name }}</div>
-          <div class="text-sm md:text-base text-gray-600">SKU: {{ product.sku }}</div>
-        </div>
+    
+    <div class="section-content" *ngIf="inventoryExpanded">
+      <div class="alert alert-danger">
+        <span class="alert-dot"></span>
+        <span>You have 1 stock alert.</span>
+      </div>
+      <div class="alert alert-danger">
+        <span class="alert-dot"></span>
+        <span>You have 1 product is spoiling soon.</span>
+      </div>
+      <div class="alert alert-warning">
+        <span class="alert-dot"></span>
+        <span>You received 1 new recommendation.</span>
       </div>
     </div>
-
-    <div class="border border-gray-300"></div>
-
-    <button class="w-full py-2 bg-white border border-gray-400 rounded-lg text-sm md:text-base font-medium" 
-    (click)="navigateToAddProduce()">
-      Add Product
-    </button>
   </div>
-
+  
+  <!-- Order request section -->
+  <div class="dashboard-section">
+    <div class="section-header" (click)="toggleOrderSection()">
+      <h2>Order Request</h2>
+      <span class="chevron" [class.expanded]="orderExpanded">▼</span>
+    </div>
+    
+    <div class="section-content" *ngIf="orderExpanded">
+      <div class="alert alert-danger">
+        <span class="alert-dot"></span>
+        <span>1 buyer contacted you</span>
+      </div>
+      
+      <div class="order-request" *ngFor="let request of orderRequests">
+        <div class="request-details">
+          <p class="request-text">
+            {{request.restaurant}} requests {{request.quantity}} of {{request.product}} from you
+          </p>
+          <span class="timestamp">{{request.timeAgo}}</span>
+        </div>
+        <button class="view-request-button" (click)="viewRequest()">View Request</button>
+      </div>
+    </div>
+  </div>
 </div>
