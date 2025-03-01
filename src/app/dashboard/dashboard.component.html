@@ -27,17 +27,26 @@
     </div>
     
     <div class="section-content" *ngIf="inventoryExpanded">
-      <div class="alert alert-danger">
-        <span class="alert-dot"></span>
-        <span>You have 1 stock alert.</span>
+      <!-- Show alerts when there's inventory -->
+      <div *ngIf="!showEmptyState && inventoryItems && inventoryItems.length > 0">
+        <div class="alert alert-danger">
+          <span class="alert-dot"></span>
+          <span>You have 1 stock alert.</span>
+        </div>
+        <div class="alert alert-danger">
+          <span class="alert-dot"></span>
+          <span>You have 1 product is spoiling soon.</span>
+        </div>
+        <div class="alert alert-warning">
+          <span class="alert-dot"></span>
+          <span>You received 1 new recommendation.</span>
+        </div>
       </div>
-      <div class="alert alert-danger">
-        <span class="alert-dot"></span>
-        <span>You have 1 product is spoiling soon.</span>
-      </div>
-      <div class="alert alert-warning">
-        <span class="alert-dot"></span>
-        <span>You received 1 new recommendation.</span>
+      
+      <!-- Empty state when no inventory available (or when showEmptyState is true) -->
+      <div *ngIf="showEmptyState || !inventoryItems || inventoryItems.length === 0" class="empty-state">
+        <p class="empty-message">No inventory available.<br>Please add a product.</p>
+        <button class="add-product-button" (click)="navigateToAddProduce()">Add new product</button>
       </div>
     </div>
   </div>
