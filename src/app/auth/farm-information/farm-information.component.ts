@@ -12,19 +12,35 @@ import { FormsModule } from '@angular/forms';
       <img class="background-image" src="assets/img/0.png" alt="background" />
       
       <div class="progress-container">
-        <div class="progress-numbers">
-          <div class="number active">1</div>
-          <div class="number active">2</div>
-          <div class="number">3</div>
+        <div class="progress-bar-wrapper">
+          <div class="progress-circle active">
+            <div class="progress-ring" style="clip-path: circle(100% at 50% 50%)"></div>
+            <span class="progress-text">1</span>
+          </div>
+          <div class="progress-line">
+            <div class="progress-bar" style="width: 100%"></div>
+          </div>
+          <div class="progress-circle active">
+            <div class="progress-ring" style="clip-path: circle(100% at 50% 50%)"></div>
+            <span class="progress-text">2</span>
+          </div>
+          <div class="progress-line">
+            <div class="progress-bar" style="width: 0%"></div>
+          </div>
+          <div class="progress-circle">
+            <div class="progress-ring" style="clip-path: circle(0% at 50% 50%)"></div>
+            <span class="progress-text">3</span>
+          </div>
         </div>
-        <div class="header-text">
+        <div class="register-header">
           <h2>Farm Information</h2>
           <div class="step-info">
             <span class="next-label">Next:</span>
-            <span class="step-detail">Business Details</span>
+            <span class="step-detail">More Information</span>
           </div>
         </div>
       </div>
+      
       <div class="form-container">
         <label for="farmName">Farm name</label>
         <input id="farmName" type="text" placeholder="Enter farm name">
@@ -128,47 +144,79 @@ import { FormsModule } from '@angular/forms';
     .progress-container {
       position: relative;
       z-index: 1;
+      margin-bottom: 2rem;
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-bottom: 2rem;
     }
-    .progress-numbers {
+    .progress-bar-wrapper {
       display: flex;
-      gap: 12px;
-      justify-content: center;
+      align-items: center;
+      width: 100%;
+      max-width: 200px;
       margin-bottom: 16px;
     }
-    .number {
+    .progress-circle {
       width: 40px;
       height: 40px;
-      border: 2px solid #ddd;
       border-radius: 50%;
+      border: 2px solid #ddd;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 500;
-      font-size: 16px;
+      position: relative;
+      background: white;
     }
-    .number.active {
+    .progress-circle.active {
       border-color: #4CAF50;
-      color: #4CAF50;
     }
-    .header-text {
+    .progress-ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: #4CAF50;
+      border-radius: 50%;
+      z-index: -1;
+    }
+    .progress-text {
+      z-index: 1;
+      color: #000;
+    }
+    .progress-line {
+      height: 2px;
+      background: #ddd;
+      flex: 1;
+    }
+    .progress-bar {
+      height: 100%;
+      background: #4CAF50;
+    }
+    .register-header {
       text-align: center;
+      margin-bottom: 16px;
     }
-    h2 {
+    .register-header h2 {
       margin: 0;
-      font-size: 24px;
-      font-weight: 700;
-      margin-bottom: 8px;
+      font-size: 20px;
+      margin-bottom: 4px;
     }
     .step-info {
-      display: flex;
-      gap: 8px;
-      justify-content: center;
       color: #666;
       font-size: 14px;
+      display: flex;
+      gap: 4px;
+      justify-content: center;
+    }
+    .form-container {
+      position: relative;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 2rem;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+      flex-grow: 1;
     }
   `]
 })

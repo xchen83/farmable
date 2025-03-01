@@ -8,7 +8,87 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './confirmation-page.component.html',
-  styleUrls: ['./confirmation-page.component.css']
+  styleUrls: ['./confirmation-page.component.css'],
+  styles: [`
+    /* New progress bar styles */
+    .progress-container {
+      position: relative;
+      z-index: 1;
+      margin-bottom: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .progress-bar-wrapper {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      max-width: 200px;
+      margin-bottom: 16px;
+    }
+
+    .progress-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background: white;
+    }
+
+    .progress-circle.active {
+      border-color: #4CAF50;
+    }
+
+    .progress-ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: #4CAF50;
+      border-radius: 50%;
+      z-index: -1;
+      transition: clip-path 0.3s;
+    }
+
+    .progress-text {
+      z-index: 1;
+      color: #000;
+    }
+
+    .progress-line {
+      height: 2px;
+      background: #ddd;
+      flex: 1;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: #4CAF50;
+    }
+
+    .register-header {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .register-header h2 {
+      margin: 0;
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+
+    .step-info {
+      color: #666;
+      font-size: 14px;
+      display: flex;
+      gap: 4px;
+      justify-content: center;
+    }
+  `]
 })
 export class ConfirmationPageComponent implements OnInit {
   selectedRole: string = '';
@@ -87,5 +167,19 @@ export class ConfirmationPageComponent implements OnInit {
       default:
         return 0;
     }
+  }
+
+  // Get next step name
+  getNextStepName(): string {
+    if (this.selectedRole === 'farmer') {
+      return this.progress === 1 ? 'Farm Information' : 'Business Details';
+    } else {
+      return 'Account Verification';
+    }
+  }
+
+  // Get title for current step
+  getCurrentStepTitle(): string {
+    return this.progress === 1 ? 'Create Account' : 'Verification';
   }
 }
