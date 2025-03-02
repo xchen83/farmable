@@ -6,26 +6,30 @@
       <p class="date">{{currentDate}}</p>
     </div>
   </div>
-  
+
   <!-- Quick access buttons -->
   <div class="quick-access">
     <button class="quick-button" (click)="navigateToAddInventory()">
-      <img src="/assets/img/vector.svg" alt="Inventory Icon" class="button-icon">
+      <div class="icon-with-text gap-1">
+        <fa-icon [icon]="faBoxArchive" class="text-lime-600"></fa-icon>
+      </div>
       <span>Check Inventory</span>
     </button>
-    <button class="quick-button">
-      <img src="/assets/img/vector2.svg" alt="Order Icon" class="button-icon">
+    <button class="quick-button" (click)="navigateToOrder()">
+      <div class="icon-with-text gap-1">
+        <fa-icon [icon]="faClipboardList" class="text-lime-600"></fa-icon>
+      </div>
       <span>Manage Order</span>
     </button>
   </div>
-  
+
   <!-- Inventory overview section -->
   <div class="dashboard-section">
     <div class="section-header" (click)="toggleInventorySection()">
       <h2>Inventory Stock Overview</h2>
-      <span class="chevron" [class.expanded]="inventoryExpanded">▼</span>
+      <fa-icon [icon]="inventoryExpanded ? faChevronUp : faChevronDown" class="chevron"></fa-icon>
     </div>
-    
+
     <div class="section-content" *ngIf="inventoryExpanded">
       <!-- Show alerts when there's inventory -->
       <div *ngIf="!showEmptyState && inventoryItems && inventoryItems.length > 0">
@@ -41,8 +45,44 @@
           <span class="alert-dot"></span>
           <span>You received 1 new recommendation.</span>
         </div>
+
+        <!-- Product Table with Tailwind CSS -->
+        <div class="mt-4">
+          <div class="bg-white rounded-lg overflow-hidden">
+            <div class="px-4 py-3 border-b border-gray-200 bg-gray-50">
+              <h3 class="text-sm font-medium text-gray-700">Your Products</h3>
+            </div>
+            <div class="divide-y divide-gray-200">
+              <div *ngFor="let product of products" class="flex items-center p-4">
+                <div
+                  class="flex-shrink-0 h-12 w-12 rounded-md overflow-hidden bg-gray-100 flex items-center justify-center">
+                  <img [src]="product.image" alt="Product image" class="h-full w-full object-cover"
+                    (error)="handleImageError($event)">
+                </div>
+                <div class="ml-4 flex-1">
+                  <div class="flex justify-between">
+                    <div>
+                      <h4 class="text-sm font-medium text-gray-900">{{product.name}}</h4>
+                      <p class="text-xs text-gray-500">SKU: {{product.sku}}</p>
+                    </div>
+                    <div class="text-right">
+                      <span class="text-sm font-medium text-lime-600">
+                        {{getProductQuantity(product.name)}}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="px-4 py-3 bg-gray-50 text-right">
+              <button class="text-sm text-lime-600 font-medium hover:text-lime-700" (click)="navigateToAddInventory()">
+                View All Products
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
-      
+
       <!-- Empty state when no inventory available (or when showEmptyState is true) -->
       <div *ngIf="showEmptyState || !inventoryItems || inventoryItems.length === 0" class="empty-state">
         <p class="empty-message">No inventory available.<br>Please add a product.</p>
@@ -50,20 +90,20 @@
       </div>
     </div>
   </div>
-  
+
   <!-- Order request section -->
   <div class="dashboard-section">
     <div class="section-header" (click)="toggleOrderSection()">
       <h2>Order Request</h2>
-      <span class="chevron" [class.expanded]="orderExpanded">▼</span>
+      <fa-icon [icon]="orderExpanded ? faChevronUp : faChevronDown" class="chevron"></fa-icon>
     </div>
-    
+
     <div class="section-content" *ngIf="orderExpanded">
       <div class="alert alert-danger">
         <span class="alert-dot"></span>
         <span>1 buyer contacted you</span>
       </div>
-      
+
       <div class="order-request" *ngFor="let request of orderRequests">
         <div class="request-details">
           <p class="request-text">
@@ -76,3 +116,11 @@
     </div>
   </div>
 </div>
+
+<style>
+  .chevron {
+    transition: transform 0.3s ease;
+    font-size: 14px;
+    color: #666;
+  }
+</style>
