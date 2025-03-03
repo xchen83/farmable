@@ -28,7 +28,7 @@ import { Order, OrderItem } from '../../models/order.model';
     <!-- Order details -->
     <div *ngIf="!isLoading && !error && order">
       <div class="header">
-          <h1>{{order.customer.name || restaurantName}}</h1>
+          <h1>{{(order.customer && order.customer.name) || restaurantName}}</h1>
           <button class="btn-contact-buyer" (click)="contactBuyer()">
               <span class="contact-icon">💬</span>
               Contact Buyer
@@ -76,11 +76,11 @@ import { Order, OrderItem } from '../../models/order.model';
               </div>
               <div class="info-row">
                   <span class="info-label">Previous transactions:</span>
-                  <span class="info-value">{{order.customer.transaction_count || 0}} completed</span>
+                  <span class="info-value">{{order.customer && order.customer.transaction_count ? order.customer.transaction_count : 0}} completed</span>
               </div>
               <div class="info-row">
                   <span class="info-label">Email:</span>
-                  <span class="info-value">{{order.customer.email || 'N/A'}}</span>
+                  <span class="info-value">{{order.customer && order.customer.email ? order.customer.email : 'N/A'}}</span>
               </div>
           </div>
       </div>
@@ -93,19 +93,19 @@ import { Order, OrderItem } from '../../models/order.model';
               <table class="request-table" *ngFor="let item of orderItems">
                   <tr>
                       <th>Product</th>
-                      <td>{{item.product.productName}}</td>
+                      <td>{{item.product ? item.product.productName : 'N/A'}}</td>
                   </tr>
                   <tr>
                       <th>Requested amount</th>
-                      <td>{{item.requested_quantity}} {{item.product.packUnit}}</td>
+                      <td>{{item.requested_quantity}} {{item.product ? item.product.packUnit : ''}}</td>
                   </tr>
                   <tr>
                       <th>Fulfilled amount</th>
-                      <td>{{item.fulfilled_quantity || 0}} {{item.product.packUnit}}</td>
+                      <td>{{item.fulfilled_quantity || 0}} {{item.product ? item.product.packUnit : ''}}</td>
                   </tr>
                   <tr>
                       <th>Remaining amount</th>
-                      <td>{{item.remaining_quantity || 'N/A'}} {{item.product.packUnit}}</td>
+                      <td>{{item.remaining_quantity || 'N/A'}} {{item.product ? item.product.packUnit : ''}}</td>
                   </tr>
                   <tr>
                       <th>Fulfillment status</th>
