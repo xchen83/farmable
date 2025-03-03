@@ -1,3 +1,4 @@
+<!-- src/app/order/order.component.html -->
 <div class="filter-section">
     <div class="dropdown-container">
         <button class="dropdown-button">
@@ -80,6 +81,16 @@
                         </td>
                     </tr>
                 </table>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="contact-button" (click)="contactBuyer(order)">
+                    Contact Buyer
+                </button>
+                <button class="view-button" (click)="viewOrderDetails(order)">
+                    View Detail
+                </button>
             </div>
         </div>
     </div>
