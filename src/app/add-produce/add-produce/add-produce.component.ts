@@ -75,7 +75,7 @@ export class AddProduceComponent {
 
   private handleSuccess(): void {
     this.loading = false;
-    this.router.navigate(['/product'], {
+    this.router.navigate(['/product/added'], {
       queryParams: { refresh: Date.now().toString() }
     });
   }

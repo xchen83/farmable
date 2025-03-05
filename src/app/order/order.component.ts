@@ -38,11 +38,11 @@ export class OrderComponent implements OnInit, OnDestroy {
   selectedStatus: string = 'all';
   selectedSort: string = 'newest';
   filteredCount: number = 0;
-  
+
   // Dropdown visibility
   showStatusDropdown: boolean = false;
   showSortDropdown: boolean = false;
-  
+
   // Auto-accept toggle
   autoAcceptEnabled: boolean = false;
 
@@ -53,9 +53,10 @@ export class OrderComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadOrders();
+    this.startPolling();
     // 启用实时更新轮询
     this.startPolling();
-    
+
     // Add click event listener to close dropdowns when clicking outside
     document.addEventListener('click', this.closeDropdowns.bind(this));
   }
@@ -63,11 +64,11 @@ export class OrderComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     // 组件销毁时停止轮询
     this.stopPolling();
-    
+
     // Remove event listener
     document.removeEventListener('click', this.closeDropdowns.bind(this));
   }
-  
+
   // Close dropdowns when clicking outside
   closeDropdowns(event: MouseEvent): void {
     const target = event.target as HTMLElement;
@@ -76,55 +77,55 @@ export class OrderComponent implements OnInit, OnDestroy {
       this.showSortDropdown = false;
     }
   }
-  
+
   // Toggle status dropdown
   toggleStatusDropdown(event: Event): void {
     event.stopPropagation();
     this.showStatusDropdown = !this.showStatusDropdown;
     this.showSortDropdown = false;
   }
-  
+
   // Toggle sort dropdown
   toggleSortDropdown(event: Event): void {
     event.stopPropagation();
     this.showSortDropdown = !this.showSortDropdown;
     this.showStatusDropdown = false;
   }
-  
+
   // Filter orders by status
   filterByStatus(status: string): void {
     this.selectedStatus = status;
     this.applyFilters();
     this.showStatusDropdown = false;
   }
-  
+
   // Sort orders
   sortOrders(sortOption: string): void {
     this.selectedSort = sortOption;
     this.applyFilters();
     this.showSortDropdown = false;
   }
-  
+
   // Apply filters and sorting
   applyFilters(): void {
     // First apply status filter
     if (this.selectedStatus === 'all') {
       this.filteredOrders = [...this.orders];
     } else {
-      this.filteredOrders = this.orders.filter(order => 
+      this.filteredOrders = this.orders.filter(order =>
         order.status.toLowerCase() === this.selectedStatus.toLowerCase()
       );
     }
-    
+
     // Then apply sorting
     switch (this.selectedSort) {
       case 'newest':
-        this.filteredOrders.sort((a, b) => 
+        this.filteredOrders.sort((a, b) =>
           new Date(b.order_date).getTime() - new Date(a.order_date).getTime()
         );
         break;
       case 'oldest':
-        this.filteredOrders.sort((a, b) => 
+        this.filteredOrders.sort((a, b) =>
           new Date(a.order_date).getTime() - new Date(b.order_date).getTime()
         );
         break;
@@ -143,7 +144,7 @@ export class OrderComponent implements OnInit, OnDestroy {
         });
         break;
     }
-    
+
     // Update filtered count
     this.filteredCount = this.filteredOrders.length;
   }
@@ -157,7 +158,7 @@ export class OrderComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response) => {
           if (response.success) {
-            // 检查订单是否有变化
+            // Only updates if there are actual changes
             if (JSON.stringify(this.orders) !== JSON.stringify(response.data)) {
               console.log('Orders updated from polling');
               this.orders = response.data;
@@ -167,7 +168,7 @@ export class OrderComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('Error in polling orders:', error);
-          // 轮询出错不显示错误给用户，保持原数据
+          // Keeps existing data if there's an error
         }
       });
   }
@@ -263,9 +264,9 @@ export class OrderComponent implements OnInit, OnDestroy {
       this.error = 'Customer information is missing';
       return;
     }
-    
-    this.router.navigate(['/order/message'], { 
-      queryParams: { 
+
+    this.router.navigate(['/order/message'], {
+      queryParams: {
         customerId: order.customer.customer_id,
         customerName: order.customer.name,
         orderId: order.order_id

@@ -1,3 +1,10 @@
+export interface InventoryRecord {
+    amount: string;
+    type: string;
+    detail: string;
+    date: string;
+}
+
 export interface Product {
     id?: number;
     productName: string;
@@ -8,6 +15,8 @@ export interface Product {
     packUnit: string;
     description: string | null;
     productImage: string | null;
+    price?: number;
+    records?: InventoryRecord[];
 }
 
 export interface ProductResponse {

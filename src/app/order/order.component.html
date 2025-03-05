@@ -17,23 +17,6 @@
         </div>
     </div>
 
-    <div class="dropdown-container">
-        <button class="dropdown-button" (click)="toggleSortDropdown($event)">
-            Sort by: {{selectedSort}}
-            <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
-        </button>
-        <!-- Sort dropdown content -->
-        <div class="dropdown-content" [class.show]="showSortDropdown">
-            <a (click)="sortOrders('newest')" [class.active]="selectedSort === 'newest'">Newest first</a>
-            <a (click)="sortOrders('oldest')" [class.active]="selectedSort === 'oldest'">Oldest first</a>
-            <a (click)="sortOrders('transactions-high')" [class.active]="selectedSort === 'transactions-high'">Most transactions</a>
-            <a (click)="sortOrders('transactions-low')" [class.active]="selectedSort === 'transactions-low'">Least transactions</a>
-        </div>
-    </div>
-    
     <!-- Auto-accept toggle button -->
     <div class="auto-accept-container">
         <span class="auto-accept-label">Auto-accept orders</span>
@@ -47,12 +30,32 @@
 <!-- 这里只展示页面标题部分的修改 -->
 <!-- 替换原来的固定标题 -->
 <h1 class="page-title">
-    {{selectedStatus === 'all' ? 'All Orders' : 
-      selectedStatus === 'pending' ? 'Pending Acceptance' : 
-      selectedStatus === 'accepted' ? 'Accepted Orders' :
-      selectedStatus === 'completed' ? 'Completed Orders' : 
-      'Orders'}} ({{filteredCount}})
-  </h1>
+    {{selectedStatus === 'all' ? 'All Orders' :
+    selectedStatus === 'pending' ? 'Pending Acceptance' :
+    selectedStatus === 'accepted' ? 'Accepted Orders' :
+    selectedStatus === 'completed' ? 'Completed Orders' :
+    'Orders'}} ({{filteredCount}})
+</h1>
+<div class="dropdown-container pb-4">
+    <div class="sort-chips-container">
+        <div class="sort-chips">
+            <button class="sort-chip" [class.active]="selectedSort === 'newest'" (click)="sortOrders('newest')">
+                Just Received
+            </button>
+            <button class="sort-chip" [class.active]="selectedSort === 'oldest'" (click)="sortOrders('oldest')">
+                Waiting Longest
+            </button>
+            <button class="sort-chip" [class.active]="selectedSort === 'transactions-high'"
+                (click)="sortOrders('transactions-high')">
+                Frequent Customers
+            </button>
+            <button class="sort-chip" [class.active]="selectedSort === 'transactions-low'"
+                (click)="sortOrders('transactions-low')">
+                New Customers
+            </button>
+        </div>
+    </div>
+</div>
 
 <!-- Loading state -->
 <div *ngIf="isLoading" class="loading-container">
@@ -112,7 +115,7 @@
                     </tr>
                 </table>
             </div>
-            
+
             <!-- Action Buttons -->
             <div class="action-buttons">
                 <button class="contact-button" (click)="contactBuyer(order)">
@@ -124,7 +127,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- No orders message -->
     <div *ngIf="filteredOrders.length === 0" class="no-orders-message">
         No orders found.
