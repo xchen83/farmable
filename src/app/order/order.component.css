@@ -423,15 +423,17 @@ input:checked + .toggle-slider:before {
 }
 
 .sort-chip {
-  padding: 8px 16px;
+  padding: 6px 12px;
   border: 1px solid #e5e7eb;
   border-radius: 20px;
   background-color: white;
   color: #4b5563;
   font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
+  box-sizing: border-box;
 }
 
 .sort-chip:hover {
