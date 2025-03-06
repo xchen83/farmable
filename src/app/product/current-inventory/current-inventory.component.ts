@@ -2,6 +2,9 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProductService } from '../../services/product.service';
 import { Product } from '../../types/product.types';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { Router } from '@angular/router';
 
 interface InventoryRecord {
   amount: string;
@@ -27,11 +30,12 @@ interface InventoryItem {
 @Component({
   selector: 'app-current-inventory',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FontAwesomeModule],
   templateUrl: './current-inventory.component.html',
   styleUrls: ['./current-inventory.component.css']
 })
 export class CurrentInventoryComponent {
+  faPlus = faPlus;
   inventoryItems: InventoryItem[] = [
     {
       name: 'Fuji Apple',
@@ -91,7 +95,7 @@ export class CurrentInventoryComponent {
   loading = true;
   errorMessage: string | null = null;
 
-  constructor(private productService: ProductService) {
+  constructor(private productService: ProductService, private router: Router) {
     this.loadRealProducts();
   }
 
@@ -111,5 +115,9 @@ export class CurrentInventoryComponent {
         console.error('Error loading products:', error);
       }
     });
+  }
+
+  navigateToAddProduce(): void {
+    this.router.navigate(['/add-produce']);
   }
 } 

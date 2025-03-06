@@ -13,24 +13,20 @@
 
 .order-header-section {
   background-color: #f9fafb;
-  padding: 20px;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
   border-bottom: 1px solid #e5e7eb;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
 }
 
 .order-header {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 8px;
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0;
 }
 
 .order-subtext {
   color: #6b7280;
-  margin-bottom: 0;
+  margin: 0;
 }
 
 .order-content {
@@ -38,7 +34,6 @@
 }
 
 .order-info {
-  margin: 20px 0;
   line-height: 1.6;
 }
 
@@ -302,9 +297,10 @@
 /* Status badge */
 .status-badge {
   padding: 4px 8px;
-  border-radius: 4px;
   font-size: 12px;
   font-weight: 500;
+  white-space: nowrap;
+  display: inline-block;
 }
 
 /* Auto-accept toggle */

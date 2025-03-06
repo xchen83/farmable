@@ -1,6 +1,10 @@
-<div class="inventory-container">
-    <h1>Current Inventory</h1>
-
+<div class="inventory-container max-w-4xl mx-auto px-4">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold pt-4">Current Inventory</h1>
+        <button (click)="navigateToAddProduce()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+            Add Produce
+        </button>
+    </div>
     <div class="search-bar">
         <div class="search-input">
             <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -27,7 +31,11 @@
 
             <div class="inventory-records" *ngIf="item.records.length > 0">
                 <div class="record" *ngFor="let record of item.records">
-                    <span class="record-dot"></span>
+                    <span class="relative flex size-3">
+                        <span
+                            class="absolute inline-flex h-full w-full animate-ping rounded-full bg-lime-400 opacity-100"></span>
+                        <span class="relative inline-flex size-3 rounded-full bg-lime-600"></span>
+                    </span>
                     <div class="record-amount">{{record.amount}}</div>
                     <div class="record-info">
                         <div class="record-type">{{record.type}}</div>

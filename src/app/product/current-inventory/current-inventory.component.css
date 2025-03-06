@@ -66,7 +66,7 @@ h1 {
 }
 
 .listing-status .active {
-  color: #22c55e;
+  color: #16a34a;
   font-weight: 500;
 }
 
@@ -75,7 +75,7 @@ h1 {
 }
 
 .modify-btn {
-  color: #22c55e;
+  color: #16a34a;
   background: none;
   border: none;
   font-size: 16px;
@@ -115,7 +115,7 @@ h1 {
 .record-dot {
   width: 8px;
   height: 8px;
-  background-color: #22c55e;
+  background-color: #16a34a;
   border-radius: 50%;
   margin-top: 8px;
   flex-shrink: 0;
@@ -190,7 +190,7 @@ h1 {
 .list-marketplace-btn {
   width: 100%;
   padding: 12px;
-  background-color: #22c55e;
+  background-color: #16a34a;
   color: white;
   border: none;
   font-weight: 500;
@@ -217,7 +217,7 @@ h1 {
 
 .btn-add {
   padding: 8px 16px;
-  background-color: #22c55e;
+  background-color: #16a34a;
   color: white;
   border: none;
   border-radius: 6px;
@@ -346,7 +346,7 @@ tr:last-child td {
 .list-marketplace-btn {
   width: 100%;
   padding: 16px;
-  background-color: #22c55e;
+  background-color: #16a34a;
   color: white;
   border: none;
   font-weight: 500;
@@ -359,7 +359,7 @@ tr:last-child td {
 .finish-listing-btn {
   width: 100%;
   padding: 16px;
-  background-color: #85690d;
+  background-color: #EA8407;
   color: white;
   border: none;
   font-weight: 500;

@@ -17,7 +17,7 @@
     </button>
     <button class="quick-button" (click)="navigateToOrder()">
       <div class="icon-with-text gap-1">
-        <fa-icon [icon]="faClipboardList" class="text-lime-600"></fa-icon>
+        <fa-icon [icon]="faClipboardList" class="text-lime-600 icon-main"></fa-icon>
       </div>
       <span>Manage Order</span>
     </button>
@@ -25,8 +25,9 @@
 
   <!-- Inventory overview section -->
   <div class="dashboard-section">
-    <div class="section-header" (click)="toggleInventorySection()">
-      <h2>Inventory Stock Overview</h2>
+    <div class="section-header bg-gray-100 flex justify-between items-center cursor-pointer"
+      (click)="toggleInventorySection()">
+      <h2 class="text-lg font-medium">Inventory Stock Overview</h2>
       <fa-icon [icon]="inventoryExpanded ? faChevronUp : faChevronDown" class="chevron"></fa-icon>
     </div>
 
@@ -34,49 +35,69 @@
       <!-- Show alerts when there's inventory -->
       <div *ngIf="!showEmptyState && inventoryItems && inventoryItems.length > 0">
         <div class="alert alert-danger">
-          <span class="alert-dot"></span>
-          <span>You have 1 stock alert.</span>
+          <span class="relative flex size-3">
+            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+            <span class="relative inline-flex size-3 rounded-full bg-red-600"></span>
+          </span>
+          <span class="pl-4">You have 1 stock alert.</span>
         </div>
         <div class="alert alert-danger">
-          <span class="alert-dot"></span>
-          <span>You have 1 product is spoiling soon.</span>
+          <span class="relative flex size-3">
+            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+            <span class="relative inline-flex size-3 rounded-full bg-red-600"></span>
+          </span>
+          <span class="pl-4">You have 1 product is spoiling soon.</span>
         </div>
         <div class="alert alert-warning">
-          <span class="alert-dot"></span>
-          <span>You received 1 new recommendation.</span>
+          <span class="relative flex size-3">
+            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-yellow-300 opacity-75"></span>
+            <span class="relative inline-flex size-3 rounded-full bg-yellow-400"></span>
+          </span>
+          <span class="pl-4">You received 1 new recommendation.</span>
         </div>
 
         <!-- Product Table with Tailwind CSS -->
         <div class="mt-4">
           <div class="bg-white rounded-lg overflow-hidden">
-            <div class="px-4 py-3 border-b border-gray-200 bg-gray-50">
-              <h3 class="text-sm font-medium text-gray-700">Your Products</h3>
+            <div class="px-0 py-3 border-b border-gray-200">
+              <h3 class="text-md font-semibold text-black">Fuji Apple</h3>
             </div>
-            <div class="divide-y divide-gray-200">
-              <div *ngFor="let product of products" class="flex items-center p-4">
-                <div
-                  class="flex-shrink-0 h-12 w-12 rounded-md overflow-hidden bg-gray-100 flex items-center justify-center">
-                  <img [src]="product.image" alt="Product image" class="h-full w-full object-cover"
-                    (error)="handleImageError($event)">
+
+            <!-- Alert Section -->
+            <div class="px-0 py-3">
+              <div class="flex flex-col gap-2">
+                <!-- Warning Text -->
+                <div class="flex items-center font-medium text-red-600">
+                  <span>Low Inventory - 5 pounds left</span>
                 </div>
-                <div class="ml-4 flex-1">
-                  <div class="flex justify-between">
-                    <div>
-                      <h4 class="text-sm font-medium text-gray-900">{{product.name}}</h4>
-                      <p class="text-xs text-gray-500">SKU: {{product.sku}}</p>
-                    </div>
-                    <div class="text-right">
-                      <span class="text-sm font-medium text-lime-600">
-                        {{getProductQuantity(product.name)}}
-                      </span>
-                    </div>
+
+                <!-- Alert Box -->
+                <div class="p-3 bg-amber-100 rounded-lg flex items-start gap-3">
+                  <div class="text-yellow-500">
+                    <fa-icon [icon]="faCircleInfo" class="!text-[1.2em]"></fa-icon>
+                  </div>
+                  <div class="flex-1">
+                    <p class="font-medium text-md">Inventory Alert</p>
+                    <p class="text-sm mt-1">Fuji Apple is selling fast! Consider preparing for the next batch.</p>
                   </div>
                 </div>
               </div>
             </div>
+
+            <!-- Visual Stats Grid -->
+            <div class="max-w-full w-full bg-white rounded-lg p-2 md:p-2 items-center">
+              <div class="mt-1">
+                <canvas id="inventoryChart" style="width: 100%; height: 300px;"></canvas>
+              </div>
+
+              <div class="grid grid-cols-1 items-center border-gray-200 border-t justify-between">
+                <div class="flex justify-between items-center pt-5">
+                </div>
+              </div>
+            </div>
             <div class="px-4 py-3 bg-gray-50 text-right">
-              <button class="text-sm text-lime-600 font-medium hover:text-lime-700" (click)="navigateToAddInventory()">
-                View All Products
+              <button class="view-request-button" (click)="navigateToAddInventory()">
+                View All Inventory
               </button>
             </div>
           </div>
@@ -98,20 +119,24 @@
       <fa-icon [icon]="orderExpanded ? faChevronUp : faChevronDown" class="chevron"></fa-icon>
     </div>
 
-    <div class="section-content" *ngIf="orderExpanded">
-      <div class="alert alert-danger">
-        <span class="alert-dot"></span>
-        <span>1 buyer contacted you</span>
-      </div>
 
-      <div class="order-request" *ngFor="let request of orderRequests">
-        <div class="request-details">
-          <p class="request-text">
-            {{request.restaurant}} requests {{request.quantity}} of {{request.product}} from you
-          </p>
-          <span class="timestamp">{{request.timeAgo}}</span>
-        </div>
-        <button class="view-request-button" (click)="viewRequest()">View Request</button>
+    <div class="section-content flex items-center" *ngIf="orderExpanded">
+      <span class="relative flex size-3">
+        <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+        <span class="relative inline-flex size-3 rounded-full bg-red-600"></span>
+      </span>
+      <span class="pl-4">1 buyer contacted you.</span>
+    </div>
+
+    <div class="order-request" *ngFor="let request of orderRequests">
+      <div class="request-details">
+        <p class="request-text">
+          {{request.restaurant}} requests {{request.quantity}} of {{request.product}} from you
+        </p>
+        <span class="timestamp">{{request.timeAgo}}</span>
+      </div>
+      <div class="px-4 py-3 bg-gray-50 text-right">
+        <button class="view-request-button" (click)="navigateToOrder()">View Request</button>
       </div>
     </div>
   </div>

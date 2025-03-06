@@ -255,6 +255,11 @@ export class OrderComponent implements OnInit, OnDestroy {
     }
   }
 
+  capitalizeFirstLetter(text: string): string {
+    if (!text) return '';
+    return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+  }
+
   viewOrderDetails(order: Order): void {
     this.router.navigate(['/order/detail', order.order_id]);
   }

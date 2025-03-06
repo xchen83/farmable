@@ -72,12 +72,17 @@
 <div *ngIf="!isLoading && !error" class="space-y-4">
     <div *ngFor="let order of filteredOrders" class="order-card">
 
-        <div class="order-header-section">
-            <div class="order-header">{{ order.customer.name || 'Customer' }}</div>
-            <div class="order-subtext">Total transactions: {{ order.customer.transaction_count || 0 }} completed</div>
-            <span [class]="'status-badge ' + getStatusClass(order.status)">
-                {{ order.status }}
-            </span>
+        <div class="order-header-section flex flex-col gap-2 p-4">
+            <div class="flex items-center justify-between">
+                <div class="order-header text-lg font-medium">{{ order.customer.name || 'Customer' }}</div>
+                <span
+                    [class]="'status-badge px-3 rounded py-1.5 text-sm font-medium whitespace-nowrap ' + getStatusClass(order.status)">
+                    {{ capitalizeFirstLetter(order.status) }}
+                </span>
+            </div>
+            <div class="order-subtext text-sm text-gray-600">
+                Total transactions: {{ order.customer.transaction_count || 0 }} completed
+            </div>
         </div>
 
         <div class="order-content">
@@ -118,10 +123,10 @@
 
             <!-- Action Buttons -->
             <div class="action-buttons">
-                <button class="contact-button" (click)="contactBuyer(order)">
+                <button class="contact-button w-full" (click)="contactBuyer(order)">
                     Contact Buyer
                 </button>
-                <button class="view-button" (click)="viewOrderDetails(order)">
+                <button class="view-button w-full" (click)="viewOrderDetails(order)">
                     View Detail
                 </button>
             </div>
