@@ -57,9 +57,9 @@
         </div>
 
         <!-- Product Table with Tailwind CSS -->
-        <div class="mt-4">
+        <div class="mt-4 border-t">
           <div class="bg-white rounded-lg overflow-hidden">
-            <div class="px-0 py-3 border-b border-gray-200">
+            <div class="px-0 pt-3 border-gray-200">
               <h3 class="text-md font-semibold text-black">Fuji Apple</h3>
             </div>
 
@@ -90,12 +90,8 @@
                 <canvas id="inventoryChart" style="width: 100%; height: 300px;"></canvas>
               </div>
 
-              <div class="grid grid-cols-1 items-center border-gray-200 border-t justify-between">
-                <div class="flex justify-between items-center pt-5">
-                </div>
-              </div>
             </div>
-            <div class="px-4 py-3 bg-gray-50 text-right">
+            <div class="px-4 py-3">
               <button class="view-request-button" (click)="navigateToAddInventory()">
                 View All Inventory
               </button>
@@ -114,7 +110,7 @@
 
   <!-- Order request section -->
   <div class="dashboard-section">
-    <div class="section-header" (click)="toggleOrderSection()">
+    <div class="section-header bg-gray-100" (click)="toggleOrderSection()">
       <h2>Order Request</h2>
       <fa-icon [icon]="orderExpanded ? faChevronUp : faChevronDown" class="chevron"></fa-icon>
     </div>
@@ -127,15 +123,16 @@
       </span>
       <span class="pl-4">1 buyer contacted you.</span>
     </div>
-
-    <div class="order-request" *ngFor="let request of orderRequests">
-      <div class="request-details">
-        <p class="request-text">
-          {{request.restaurant}} requests {{request.quantity}} of {{request.product}} from you
-        </p>
-        <span class="timestamp">{{request.timeAgo}}</span>
+    <div class="px-4">
+      <div class="order-request px-4 " *ngFor="let request of orderRequests">
+        <div class="request-details rounded-md bg-gray-50 px-2 py-3 border border-gray-200">
+          <p class="request-text">
+            {{request.restaurant}} requests {{request.quantity}} of {{request.product}} from you
+          </p>
+          <span class="timestamp">{{request.timeAgo}}</span>
+        </div>
       </div>
-      <div class="px-4 py-3 bg-gray-50 text-right">
+      <div class="px-4 py-3">
         <button class="view-request-button" (click)="navigateToOrder()">View Request</button>
       </div>
     </div>
