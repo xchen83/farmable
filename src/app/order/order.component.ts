@@ -4,12 +4,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faSearch, faShoppingCart, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faShoppingCart, faChevronDown, faChevronUp, faSync } from '@fortawesome/free-solid-svg-icons';
 import { OrderService } from '../services/order.service';
 // Import the Order interface 
 import { Order } from '../order/order.types';
-import { interval, Subscription } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { interval, Subscription, Subject } from 'rxjs';
+import { switchMap, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-order',
@@ -29,15 +29,22 @@ export class OrderComponent implements OnInit, OnDestroy {
   isLoading = true;
   error: string | null = null;
   
+  // Auto-refresh state
+  pollingEnabled: boolean = true;
+  lastRefreshed: Date | null = null;
+  refreshingNow: boolean = false;
+  
   // FontAwesome icons
   faSearch = faSearch;
   faShoppingCart = faShoppingCart;
   faChevronDown = faChevronDown;
   faChevronUp = faChevronUp;
+  faSync = faSync;
 
   // Polling variables
   private pollingSubscription: Subscription | null = null;
-  private pollingInterval = 30000; // 30 seconds polling
+  private destroy$ = new Subject<void>();
+  private pollingInterval = 3000; // 3 seconds polling by default
 
   // Filtering and sorting properties
   selectedStatus: string = 'all';
@@ -59,8 +66,11 @@ export class OrderComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     console.log('OrderComponent initialized');
     this.loadOrders();
-    // Uncomment this if you want to enable polling
-    // this.startPolling();
+    
+    // Start polling if enabled
+    if (this.pollingEnabled) {
+      this.startPolling();
+    }
 
     // Add click event listener to close dropdowns when clicking outside
     document.addEventListener('click', this.closeDropdowns.bind(this));
@@ -68,9 +78,9 @@ export class OrderComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     // Stop polling when component is destroyed
-    if (this.pollingSubscription) {
-      this.pollingSubscription.unsubscribe();
-    }
+    this.stopPolling();
+    this.destroy$.next();
+    this.destroy$.complete();
 
     // Remove event listener
     document.removeEventListener('click', this.closeDropdowns.bind(this));
@@ -83,6 +93,25 @@ export class OrderComponent implements OnInit, OnDestroy {
       this.showStatusDropdown = false;
       this.showSortDropdown = false;
     }
+  }
+
+  // Toggle auto-refresh
+  toggleAutoRefresh(): void {
+    this.pollingEnabled = !this.pollingEnabled;
+    
+    if (this.pollingEnabled) {
+      this.startPolling();
+    } else {
+      this.stopPolling();
+    }
+  }
+
+  // Manual refresh
+  refreshOrders(): void {
+    if (this.refreshingNow) return; // Prevent multiple simultaneous refreshes
+    
+    this.refreshingNow = true;
+    this.loadOrders(true);
   }
 
   // Toggle status dropdown
@@ -161,19 +190,18 @@ export class OrderComponent implements OnInit, OnDestroy {
     // Update filtered count
     this.filteredCount = this.filteredOrders.length;
     console.log(`Applied filters: ${this.filteredCount} orders remain`);
-    
-    // Debug customer info
-    this.filteredOrders.forEach((order, index) => {
-      console.log(`Order ${index} customer:`, order.customer);
-    });
   }
 
-  // Start polling - Not used by default but kept for future use
+  // Start polling for new orders
   private startPolling(): void {
     console.log('Starting order polling');
     this.pollingSubscription = interval(this.pollingInterval)
       .pipe(
-        switchMap(() => this.orderService.getOrders())
+        takeUntil(this.destroy$),
+        switchMap(() => {
+          console.log('Polling for new orders...');
+          return this.orderService.getOrders();
+        })
       )
       .subscribe({
         next: (response) => {
@@ -184,9 +212,15 @@ export class OrderComponent implements OnInit, OnDestroy {
             
             if (oldOrdersJson !== newOrdersJson) {
               console.log('Orders updated from polling');
-              this.orders = response.data;
-              this.applyFilters();
+              this.updateOrdersData(response.data);
+              
+              // Show notification or visual indicator that new orders arrived
+              this.showNewOrdersNotification();
+            } else {
+              console.log('Polling completed - no changes detected');
             }
+            
+            this.lastRefreshed = new Date();
           }
         },
         error: (error) => {
@@ -194,6 +228,13 @@ export class OrderComponent implements OnInit, OnDestroy {
           // Keep existing data if there's an error
         }
       });
+  }
+
+  // Show notification for new orders (you can implement this)
+  private showNewOrdersNotification(): void {
+    // You could implement a toast notification here
+    // For now we'll just log to console
+    console.log('New orders received!');
   }
 
   // Stop polling - Called in ngOnDestroy
@@ -206,8 +247,10 @@ export class OrderComponent implements OnInit, OnDestroy {
   }
 
   // Load orders from the API
-  private loadOrders(): void {
-    this.isLoading = true;
+  private loadOrders(isManualRefresh: boolean = false): void {
+    if (!isManualRefresh) {
+      this.isLoading = true;
+    }
     this.error = null;
   
     console.log('OrderComponent: Loading orders...');
@@ -215,34 +258,17 @@ export class OrderComponent implements OnInit, OnDestroy {
     this.orderService.getOrders().subscribe({
       next: (response) => {
         this.isLoading = false;
+        this.refreshingNow = false;
+        this.lastRefreshed = new Date();
+        
         console.log('OrderComponent: Received response:', response);
         
         if (response.success) {
           console.log('OrderComponent: Got successful response with', response.data?.length, 'orders');
           
-          // Check if order_items is defined for each order, if not, initialize to empty array
+          // Update orders data
           if (response.data) {
-            this.orders = response.data.map(order => {
-              // Ensure customer is properly set
-              if (!order.customer && order.customer_name) {
-                order.customer = {
-                  customer_id: order.customer_id,
-                  name: order.customer_name,
-                  email: order.customer_email || '',
-                  transaction_count: order.transaction_count || 0,
-                  total_spent: 0,
-                  created_at: ''
-                };
-              }
-              
-              return {
-                ...order,
-                order_items: order.order_items || []
-              };
-            });
-            
-            this.applyFilters();
-            console.log('OrderComponent: After filtering:', this.filteredOrders.length, 'orders');
+            this.updateOrdersData(response.data);
           } else {
             this.orders = [];
             this.applyFilters();
@@ -255,9 +281,36 @@ export class OrderComponent implements OnInit, OnDestroy {
       error: (error) => {
         console.error('OrderComponent: Error from API call:', error);
         this.isLoading = false;
+        this.refreshingNow = false;
         this.error = 'Failed to connect to the server. Please check your connection.';
       }
     });
+  }
+
+  // Update orders data with proper formatting
+  private updateOrdersData(data: Order[]): void {
+    // Process the data to ensure all required properties
+    this.orders = data.map(order => {
+      // Ensure customer is properly set
+      if (!order.customer && order.customer_name) {
+        order.customer = {
+          customer_id: order.customer_id,
+          name: order.customer_name,
+          email: order.customer_email || '',
+          transaction_count: order.transaction_count || 0,
+          total_spent: 0,
+          created_at: ''
+        };
+      }
+      
+      return {
+        ...order,
+        order_items: order.order_items || []
+      };
+    });
+    
+    this.applyFilters();
+    console.log('OrderComponent: After filtering:', this.filteredOrders.length, 'orders');
   }
 
   // Handle search input
@@ -298,6 +351,12 @@ export class OrderComponent implements OnInit, OnDestroy {
   // Format date for display
   formatDate(date: string): string {
     return new Date(date).toLocaleDateString();
+  }
+
+  // Format time for last refreshed display
+  formatTime(date: Date | null): string {
+    if (!date) return '';
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
 
   // Get CSS class for status badges

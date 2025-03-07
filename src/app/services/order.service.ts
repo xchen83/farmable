@@ -1,7 +1,7 @@
 // src/app/services/order.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, of, BehaviorSubject } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { Order } from '../order/order.types';
 
@@ -11,6 +11,16 @@ import { Order } from '../order/order.types';
 export class OrderService {
   // API base URL - Ensure this matches your backend structure exactly
   private apiUrl = 'https://farmable-backend.xchen83.workers.dev/api';
+  
+  // Keep track of the last fetch time to optimize requests
+  private lastFetchTime: Date | null = null;
+  
+  // BehaviorSubject to allow components to subscribe to order updates
+  private ordersSubject = new BehaviorSubject<Order[]>([]);
+  public orders$ = this.ordersSubject.asObservable();
+  
+  // Flag to track if initial data has been loaded
+  private initialDataLoaded = false;
 
   constructor(private http: HttpClient) {
     console.log('OrderService initialized with API URL:', this.apiUrl);
@@ -21,31 +31,20 @@ export class OrderService {
    */
   getOrders(): Observable<{success: boolean, data: Order[], error?: string}> {
     console.log('Fetching orders from API:', `${this.apiUrl}/orders`);
+    
     return this.http.get<{success: boolean, data: Order[]}>(`${this.apiUrl}/orders`)
       .pipe(
         tap(response => {
           console.log('API Response:', response);
+          this.lastFetchTime = new Date();
           
           // Ensure customer and order_items are properly formatted
           if (response.success && response.data) {
-            response.data.forEach(order => {
-              // Make sure customer object is properly formatted
-              if (order.customer_name && !order.customer) {
-                order.customer = {
-                  customer_id: order.customer_id,
-                  name: order.customer_name,
-                  email: order.customer_email || '',
-                  transaction_count: order.transaction_count || 0,
-                  total_spent: 0,
-                  created_at: ''
-                };
-              }
-              
-              // Make sure order_items is initialized
-              if (!order.order_items) {
-                order.order_items = [];
-              }
-            });
+            const formattedOrders = this.formatOrdersData(response.data);
+            
+            // Update the BehaviorSubject to notify subscribers
+            this.ordersSubject.next(formattedOrders);
+            this.initialDataLoaded = true;
           }
         }),
         catchError(error => {
@@ -54,6 +53,32 @@ export class OrderService {
           return of({success: false, data: [], error: error.message});
         })
       );
+  }
+
+  /**
+   * Format orders data to ensure consistent structure
+   */
+  private formatOrdersData(orders: Order[]): Order[] {
+    return orders.map(order => {
+      // Make sure customer object is properly formatted
+      if (order.customer_name && !order.customer) {
+        order.customer = {
+          customer_id: order.customer_id,
+          name: order.customer_name,
+          email: order.customer_email || '',
+          transaction_count: order.transaction_count || 0,
+          total_spent: 0,
+          created_at: ''
+        };
+      }
+      
+      // Make sure order_items is initialized
+      if (!order.order_items) {
+        order.order_items = [];
+      }
+      
+      return order;
+    });
   }
 
   /**
@@ -94,7 +119,13 @@ export class OrderService {
     console.log('Updating order status:', orderId, status);
     return this.http.put<{success: boolean}>(`${this.apiUrl}/orders/${orderId}/status`, { status })
       .pipe(
-        tap(response => console.log('Update status response:', response)),
+        tap(response => {
+          console.log('Update status response:', response);
+          // If status update was successful, refresh orders to update cached data
+          if (response.success) {
+            this.getOrders().subscribe(); // Silently update the orders cache
+          }
+        }),
         catchError(error => {
           console.error('Error updating order status:', error);
           return of({success: false, error: error.message});
@@ -109,7 +140,13 @@ export class OrderService {
     console.log('Creating order with data:', orderData);
     return this.http.post<{success: boolean, id?: number}>(`${this.apiUrl}/orders`, orderData)
       .pipe(
-        tap(response => console.log('Create order response:', response)),
+        tap(response => {
+          console.log('Create order response:', response);
+          // If order was created successfully, refresh orders to include the new one
+          if (response.success) {
+            this.getOrders().subscribe(); // Silently update the orders cache
+          }
+        }),
         catchError(error => {
           console.error('Error creating order:', error);
           return of({success: false, error: error.message});
@@ -159,5 +196,39 @@ export class OrderService {
         return response;
       })
     );
+  }
+
+  /**
+   * Check for new orders
+   * Returns true if there are new orders compared to the previously cached orders
+   */
+  checkForNewOrders(): Observable<boolean> {
+    return this.http.get<{success: boolean, data: Order[]}>(`${this.apiUrl}/orders`)
+      .pipe(
+        map(response => {
+          if (!response.success || !response.data || !this.initialDataLoaded) {
+            return false;
+          }
+          
+          // Compare the current orders with cached orders
+          const currentOrders = this.ordersSubject.getValue();
+          const newOrderIds = new Set(response.data.map(order => order.order_id));
+          const cachedOrderIds = new Set(currentOrders.map(order => order.order_id));
+          
+          // Check if there are new orders
+          for (const id of newOrderIds) {
+            if (!cachedOrderIds.has(id)) {
+              console.log('New order detected:', id);
+              return true;
+            }
+          }
+          
+          return false;
+        }),
+        catchError(error => {
+          console.error('Error checking for new orders:', error);
+          return of(false);
+        })
+      );
   }
 }
