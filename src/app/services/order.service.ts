@@ -1,90 +1,136 @@
 // src/app/services/order.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, of, tap } from 'rxjs';
-import { 
-  Order, 
-  OrderItem, 
-  OrderResponse, 
-  OrderDetailResponse 
-} from '../models/order.model';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+// 从order.types导入Order接口
+import { Order, OrderResponse } from '../order/order.types';
 
 @Injectable({
   providedIn: 'root'
 })
 export class OrderService {
-  // 后端 API 基础 URL
-  private apiUrl = 'https://farmable-backend.xchen83.workers.dev/api';
+  // API基础URL
+  private apiUrl = 'https://farmable-backend.yourdomain.workers.dev/api'; // 替换为你的实际API地址
 
   constructor(private http: HttpClient) { }
 
-  // 获取所有订单
-  getOrders(): Observable<OrderResponse> {
-    console.log('Fetching orders from API...');
-    return this.http.get<OrderResponse>(`${this.apiUrl}/orders`).pipe(
-      tap(response => console.log('Received orders data:', response)),
-      catchError(error => {
-        console.error('Error fetching orders:', error);
-        // 返回一个带有错误信息的模拟响应
-        return of({ success: false, data: [] });
-      })
-    );
+  /**
+   * 获取所有订单
+   */
+  getOrders(): Observable<{success: boolean, data: Order[]}> {
+    return this.http.get<{success: boolean, data: Order[]}>(`${this.apiUrl}/orders`)
+      .pipe(
+        map(response => {
+          // 确保每个订单对象都有customer属性和order_items属性
+          if (response.success && response.data) {
+            response.data = response.data.map(order => ({
+              ...order,
+              customer: order.customer || { 
+                customer_id: 0,
+                name: 'Unknown Customer',
+                email: '',
+                phone: '',
+                total_spent: 0,
+                transaction_count: 0,
+                created_at: new Date().toISOString()
+              },
+              order_items: order.order_items || []
+            }));
+          }
+          return response;
+        }),
+        catchError(this.handleError<{success: boolean, data: Order[]}>('getOrders', {success: false, data: []}))
+      );
   }
 
-  // 获取单个订单详情
-  getOrderById(id: number): Observable<OrderDetailResponse> {
-    console.log(`Fetching order details for order #${id}`);
-    return this.http.get<OrderDetailResponse>(`${this.apiUrl}/orders/${id}`).pipe(
-      tap(response => console.log('Received order detail:', response)),
-      catchError(error => {
-        console.error(`Error fetching order #${id}:`, error);
-        return of({ 
-          success: false, 
-          data: { 
-            order: null as any, 
-            items: [] 
-          } 
-        });
-      })
-    );
+  /**
+   * 根据ID获取订单详情
+   */
+  getOrderById(orderId: number): Observable<{success: boolean, data: any}> {
+    return this.http.get<{success: boolean, data: any}>(`${this.apiUrl}/orders/${orderId}`)
+      .pipe(
+        map(response => {
+          // 确保订单对象有customer属性
+          if (response.success && response.data && response.data.order) {
+            response.data.order.customer = response.data.order.customer || { 
+              customer_id: 0,
+              name: 'Unknown Customer',
+              email: '',
+              phone: '',
+              total_spent: 0,
+              transaction_count: 0,
+              created_at: new Date().toISOString()
+            };
+          }
+          return response;
+        }),
+        catchError(this.handleError<{success: boolean, data: any}>('getOrderById', {success: false, data: null}))
+      );
   }
 
-  // 搜索订单
-  searchOrders(term: string): Observable<OrderResponse> {
-    return this.http.get<OrderResponse>(`${this.apiUrl}/orders?search=${term}`).pipe(
-      catchError(error => {
-        console.error('Error searching orders:', error);
-        return of({ success: false, data: [] });
-      })
-    );
+  /**
+   * 更新订单状态
+   */
+  updateOrderStatus(orderId: number, status: string): Observable<{success: boolean}> {
+    return this.http.put<{success: boolean}>(`${this.apiUrl}/orders/${orderId}/status`, { status })
+      .pipe(
+        catchError(this.handleError<{success: boolean}>('updateOrderStatus', {success: false}))
+      );
   }
 
-  // 更新订单状态
-  updateOrderStatus(orderId: number, status: string): Observable<any> {
-    return this.http.put(`${this.apiUrl}/orders/${orderId}/status`, { status }).pipe(
-      tap(response => console.log(`Updated order #${orderId} status:`, response)),
-      catchError(error => {
-        console.error(`Error updating order #${orderId}:`, error);
-        return of({ success: false, error: error.message });
-      })
-    );
-  }
-
-  // 联系买家 (发送消息)
-  sendMessageToBuyer(orderId: number, customerId: number, message: string): Observable<any> {
-    const messageData = {
-      order_id: orderId,
-      customer_id: customerId,
-      message: message
+  /**
+   * 发送消息给买家
+   */
+  sendMessageToBuyer(orderId: number, customerId: number, message: string): Observable<{success: boolean}> {
+    const data = {
+      orderId,
+      customerId,
+      message
     };
-    
-    return this.http.post(`${this.apiUrl}/messages`, messageData).pipe(
-      tap(response => console.log('Message sent:', response)),
-      catchError(error => {
-        console.error('Error sending message:', error);
-        // 模拟成功响应以便前端开发
-        return of({ success: true, message: 'Message sent successfully' });
-      })
-    );
+    return this.http.post<{success: boolean}>(`${this.apiUrl}/messages`, data)
+      .pipe(
+        catchError(this.handleError<{success: boolean}>('sendMessageToBuyer', {success: false}))
+      );
+  }
+
+  /**
+   * 搜索订单
+   */
+  searchOrders(searchTerm: string): Observable<{success: boolean, data: Order[]}> {
+    return this.http.get<{success: boolean, data: Order[]}>(`${this.apiUrl}/orders/search?q=${searchTerm}`)
+      .pipe(
+        map(response => {
+          // 确保每个订单对象都有customer属性
+          if (response.success && response.data) {
+            response.data = response.data.map(order => ({
+              ...order,
+              customer: order.customer || { 
+                customer_id: 0,
+                name: 'Unknown Customer',
+                email: '',
+                phone: '',
+                total_spent: 0,
+                transaction_count: 0,
+                created_at: new Date().toISOString()
+              },
+              order_items: order.order_items || []
+            }));
+          }
+          return response;
+        }),
+        catchError(this.handleError<{success: boolean, data: Order[]}>('searchOrders', {success: false, data: []}))
+      );
+  }
+
+  /**
+   * 错误处理
+   */
+  private handleError<T>(operation = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+      console.error(`${operation} failed:`, error);
+      // 返回空结果，让应用继续运行
+      return of(result as T);
+    };
   }
 }

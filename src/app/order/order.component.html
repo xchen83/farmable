@@ -1,3 +1,4 @@
+<!-- 修正后的order.component.html -->
 <!-- src/app/order/order.component.html -->
 <div class="filter-section">
     <div class="dropdown-container">
@@ -17,23 +18,6 @@
         </div>
     </div>
 
-    <div class="dropdown-container">
-        <button class="dropdown-button" (click)="toggleSortDropdown($event)">
-            Sort by: {{selectedSort}}
-            <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
-        </button>
-        <!-- Sort dropdown content -->
-        <div class="dropdown-content" [class.show]="showSortDropdown">
-            <a (click)="sortOrders('newest')" [class.active]="selectedSort === 'newest'">Newest first</a>
-            <a (click)="sortOrders('oldest')" [class.active]="selectedSort === 'oldest'">Oldest first</a>
-            <a (click)="sortOrders('transactions-high')" [class.active]="selectedSort === 'transactions-high'">Most transactions</a>
-            <a (click)="sortOrders('transactions-low')" [class.active]="selectedSort === 'transactions-low'">Least transactions</a>
-        </div>
-    </div>
-    
     <!-- Auto-accept toggle button -->
     <div class="auto-accept-container">
         <span class="auto-accept-label">Auto-accept orders</span>
@@ -44,15 +28,44 @@
     </div>
 </div>
 
-<!-- 这里只展示页面标题部分的修改 -->
-<!-- 替换原来的固定标题 -->
+<!-- 页面标题部分 -->
 <h1 class="page-title">
-    {{selectedStatus === 'all' ? 'All Orders' : 
-      selectedStatus === 'pending' ? 'Pending Acceptance' : 
-      selectedStatus === 'accepted' ? 'Accepted Orders' :
-      selectedStatus === 'completed' ? 'Completed Orders' : 
-      'Orders'}} ({{filteredCount}})
-  </h1>
+    {{selectedStatus === 'all' ? 'All Orders' :
+    selectedStatus === 'pending' ? 'Pending Acceptance' :
+    selectedStatus === 'accepted' ? 'Accepted Orders' :
+    selectedStatus === 'completed' ? 'Completed Orders' :
+    'Orders'}} ({{filteredCount}})
+</h1>
+
+<!-- 修改排序按钮部分 -->
+<div class="mb-4">
+    <div class="flex flex-wrap gap-4 my-4 px-4">
+        <button class="px-6 py-3 rounded-full border transition-colors" 
+                [ngClass]="{'bg-green-600 text-white border-green-600': selectedSort === 'newest', 
+                           'bg-white text-gray-700 border-gray-300 hover:bg-gray-50': selectedSort !== 'newest'}"
+                (click)="sortOrders('newest')">
+            Just Received
+        </button>
+        <button class="px-6 py-3 rounded-full border transition-colors" 
+                [ngClass]="{'bg-green-600 text-white border-green-600': selectedSort === 'oldest', 
+                           'bg-white text-gray-700 border-gray-300 hover:bg-gray-50': selectedSort !== 'oldest'}"
+                (click)="sortOrders('oldest')">
+            Waiting Longest
+        </button>
+        <button class="px-6 py-3 rounded-full border transition-colors" 
+                [ngClass]="{'bg-green-600 text-white border-green-600': selectedSort === 'transactions-high', 
+                           'bg-white text-gray-700 border-gray-300 hover:bg-gray-50': selectedSort !== 'transactions-high'}"
+                (click)="sortOrders('transactions-high')">
+            Frequent Customers
+        </button>
+        <button class="px-6 py-3 rounded-full border transition-colors" 
+                [ngClass]="{'bg-green-600 text-white border-green-600': selectedSort === 'transactions-low', 
+                           'bg-white text-gray-700 border-gray-300 hover:bg-gray-50': selectedSort !== 'transactions-low'}"
+                (click)="sortOrders('transactions-low')">
+            New Customers
+        </button>
+    </div>
+</div>
 
 <!-- Loading state -->
 <div *ngIf="isLoading" class="loading-container">
@@ -69,12 +82,19 @@
 <div *ngIf="!isLoading && !error" class="space-y-4">
     <div *ngFor="let order of filteredOrders" class="order-card">
 
-        <div class="order-header-section">
-            <div class="order-header">{{ order.customer.name || 'Customer' }}</div>
-            <div class="order-subtext">Total transactions: {{ order.customer.transaction_count || 0 }} completed</div>
-            <span [class]="'status-badge ' + getStatusClass(order.status)">
-                {{ order.status }}
-            </span>
+        <div class="order-header-section flex flex-col gap-2 p-4">
+            <div class="flex items-center justify-between">
+                <!-- 修复: 添加安全导航操作符并提供后备值 -->
+                <div class="order-header text-lg font-medium">{{ order.customer?.name || 'Customer' }}</div>
+                <span
+                    [class]="'status-badge px-3 rounded py-1.5 text-sm font-medium whitespace-nowrap ' + getStatusClass(order.status)">
+                    {{ capitalizeFirstLetter(order.status) }}
+                </span>
+            </div>
+            <div class="order-subtext text-sm text-gray-600">
+                <!-- 修复: 添加安全导航操作符并提供后备值 -->
+                Total transactions: {{ order.customer?.transaction_count || 0 }} completed
+            </div>
         </div>
 
         <div class="order-content">
@@ -95,11 +115,13 @@
                         <th>Status</th>
                         <th>System note</th>
                     </tr>
-                    <tr *ngFor="let item of order.order_items">
-                        <td>{{ item.product.productName || 'Product' }}</td>
-                        <td>{{ item.requested_quantity }}{{ item.product.packUnit || '' }}</td>
-                        <td>{{ item.fulfilled_quantity || 0 }}{{ item.product.packUnit || '' }}</td>
-                        <td>{{ item.remaining_quantity || 0 }}{{ item.product.packUnit || '' }}</td>
+                    <!-- 修复: 判断order_items是否存在 -->
+                    <tr *ngFor="let item of order.order_items || []">
+                        <!-- 修复: 添加安全导航操作符 -->
+                        <td>{{ item.product?.productName || 'Product' }}</td>
+                        <td>{{ item.requested_quantity }}{{ item.product?.packUnit || '' }}</td>
+                        <td>{{ item.fulfilled_quantity || 0 }}{{ item.product?.packUnit || '' }}</td>
+                        <td>{{ item.remaining_quantity || 0 }}{{ item.product?.packUnit || '' }}</td>
                         <td class="status-icon" [ngClass]="{
                             'status-success': item.status === 'completed',
                             'status-fail': item.status === 'pending' || item.status === 'cancelled'
@@ -110,21 +132,25 @@
                             {{ item.system_note || 'N/A' }}
                         </td>
                     </tr>
+                    <!-- 没有订单项时显示提示 -->
+                    <tr *ngIf="!order.order_items || order.order_items.length === 0">
+                        <td colspan="6" class="text-center py-4">No items found in this order.</td>
+                    </tr>
                 </table>
             </div>
-            
+
             <!-- Action Buttons -->
             <div class="action-buttons">
-                <button class="contact-button" (click)="contactBuyer(order)">
+                <button class="contact-button w-full" (click)="contactBuyer(order)">
                     Contact Buyer
                 </button>
-                <button class="view-button" (click)="viewOrderDetails(order)">
+                <button class="view-button w-full" (click)="viewOrderDetails(order)">
                     View Detail
                 </button>
             </div>
         </div>
     </div>
-    
+
     <!-- No orders message -->
     <div *ngIf="filteredOrders.length === 0" class="no-orders-message">
         No orders found.
