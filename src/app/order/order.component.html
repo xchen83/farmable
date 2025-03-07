@@ -27,7 +27,7 @@
     </div>
 </div>
 
-<!-- 页面标题部分 -->
+<!-- Page title part -->
 <h1 class="page-title">
     {{selectedStatus === 'all' ? 'All Orders' :
     selectedStatus === 'pending' ? 'Pending Acceptance' :
@@ -36,7 +36,7 @@
     'Orders'}} ({{filteredCount}})
 </h1>
 
-<!-- 改进的排序按钮部分 -->
+<!-- Improved sort buttons section -->
 <div class="mb-4">
     <div class="flex flex-wrap gap-4 my-4 px-4">
         <button class="px-6 py-3 rounded-full border transition-colors" 
@@ -113,7 +113,7 @@
                         <th>System note</th>
                     </tr>
                     <tr *ngFor="let item of order.order_items || []">
-                        <td>{{ item.product?.productName || 'Product' }}</td>
+                        <td>{{ item.product?.productName || 'N/A' }}</td>
                         <td>{{ item.requested_quantity }}{{ item.product?.packUnit || '' }}</td>
                         <td>{{ item.fulfilled_quantity || 0 }}{{ item.product?.packUnit || '' }}</td>
                         <td>{{ item.remaining_quantity || 0 }}{{ item.product?.packUnit || '' }}</td>
@@ -127,7 +127,7 @@
                             {{ item.system_note || 'N/A' }}
                         </td>
                     </tr>
-                    <!-- 没有订单项时显示提示 -->
+                    <!-- No order items message -->
                     <tr *ngIf="!order.order_items || order.order_items.length === 0">
                         <td colspan="6" class="text-center py-4">No items found in this order.</td>
                     </tr>
