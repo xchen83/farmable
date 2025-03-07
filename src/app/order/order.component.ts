@@ -4,9 +4,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faSearch, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faShoppingCart, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import { OrderService } from '../services/order.service';
-import { Order } from '../models/order.model';
+// Import the Order interface 
+import { Order } from '../order/order.types';
 import { interval, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
@@ -25,14 +26,18 @@ export class OrderComponent implements OnInit, OnDestroy {
   searchTerm: string = '';
   orders: Order[] = [];
   filteredOrders: Order[] = [];
-  isLoading = false;
+  isLoading = true;
   error: string | null = null;
+  
+  // FontAwesome icons
   faSearch = faSearch;
   faShoppingCart = faShoppingCart;
+  faChevronDown = faChevronDown;
+  faChevronUp = faChevronUp;
 
-  // 轮询变量
+  // Polling variables
   private pollingSubscription: Subscription | null = null;
-  private pollingInterval = 30000; // 30秒轮询一次
+  private pollingInterval = 30000; // 30 seconds polling
 
   // Filtering and sorting properties
   selectedStatus: string = 'all';
@@ -49,21 +54,23 @@ export class OrderComponent implements OnInit, OnDestroy {
   constructor(
     private orderService: OrderService,
     private router: Router
-  ) { }
+  ) {}
 
   ngOnInit(): void {
+    console.log('OrderComponent initialized');
     this.loadOrders();
-    this.startPolling();
-    // 启用实时更新轮询
-    this.startPolling();
+    // Uncomment this if you want to enable polling
+    // this.startPolling();
 
     // Add click event listener to close dropdowns when clicking outside
     document.addEventListener('click', this.closeDropdowns.bind(this));
   }
 
   ngOnDestroy(): void {
-    // 组件销毁时停止轮询
-    this.stopPolling();
+    // Stop polling when component is destroyed
+    if (this.pollingSubscription) {
+      this.pollingSubscription.unsubscribe();
+    }
 
     // Remove event listener
     document.removeEventListener('click', this.closeDropdowns.bind(this));
@@ -108,12 +115,18 @@ export class OrderComponent implements OnInit, OnDestroy {
 
   // Apply filters and sorting
   applyFilters(): void {
+    console.log('Applying filters and sorting', { 
+      selectedStatus: this.selectedStatus, 
+      selectedSort: this.selectedSort,
+      ordersCount: this.orders.length 
+    });
+    
     // First apply status filter
     if (this.selectedStatus === 'all') {
       this.filteredOrders = [...this.orders];
     } else {
       this.filteredOrders = this.orders.filter(order =>
-        order.status.toLowerCase() === this.selectedStatus.toLowerCase()
+        order.status?.toLowerCase() === this.selectedStatus.toLowerCase()
       );
     }
 
@@ -131,15 +144,15 @@ export class OrderComponent implements OnInit, OnDestroy {
         break;
       case 'transactions-high':
         this.filteredOrders.sort((a, b) => {
-          const aCount = a.customer && a.customer.transaction_count ? a.customer.transaction_count : 0;
-          const bCount = b.customer && b.customer.transaction_count ? b.customer.transaction_count : 0;
+          const aCount = a.customer?.transaction_count || 0;
+          const bCount = b.customer?.transaction_count || 0;
           return bCount - aCount;
         });
         break;
       case 'transactions-low':
         this.filteredOrders.sort((a, b) => {
-          const aCount = a.customer && a.customer.transaction_count ? a.customer.transaction_count : 0;
-          const bCount = b.customer && b.customer.transaction_count ? b.customer.transaction_count : 0;
+          const aCount = a.customer?.transaction_count || 0;
+          const bCount = b.customer?.transaction_count || 0;
           return aCount - bCount;
         });
         break;
@@ -147,10 +160,17 @@ export class OrderComponent implements OnInit, OnDestroy {
 
     // Update filtered count
     this.filteredCount = this.filteredOrders.length;
+    console.log(`Applied filters: ${this.filteredCount} orders remain`);
+    
+    // Debug customer info
+    this.filteredOrders.forEach((order, index) => {
+      console.log(`Order ${index} customer:`, order.customer);
+    });
   }
 
-  // 开始轮询
+  // Start polling - Not used by default but kept for future use
   private startPolling(): void {
+    console.log('Starting order polling');
     this.pollingSubscription = interval(this.pollingInterval)
       .pipe(
         switchMap(() => this.orderService.getOrders())
@@ -158,8 +178,11 @@ export class OrderComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response) => {
           if (response.success) {
-            // Only updates if there are actual changes
-            if (JSON.stringify(this.orders) !== JSON.stringify(response.data)) {
+            // Only update if there are actual changes
+            const oldOrdersJson = JSON.stringify(this.orders);
+            const newOrdersJson = JSON.stringify(response.data);
+            
+            if (oldOrdersJson !== newOrdersJson) {
               console.log('Orders updated from polling');
               this.orders = response.data;
               this.applyFilters();
@@ -168,42 +191,76 @@ export class OrderComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('Error in polling orders:', error);
-          // Keeps existing data if there's an error
+          // Keep existing data if there's an error
         }
       });
   }
 
-  // 停止轮询
+  // Stop polling - Called in ngOnDestroy
   private stopPolling(): void {
     if (this.pollingSubscription) {
+      console.log('Stopping order polling');
       this.pollingSubscription.unsubscribe();
       this.pollingSubscription = null;
     }
   }
 
+  // Load orders from the API
   private loadOrders(): void {
     this.isLoading = true;
     this.error = null;
-
+  
+    console.log('OrderComponent: Loading orders...');
+  
     this.orderService.getOrders().subscribe({
       next: (response) => {
         this.isLoading = false;
+        console.log('OrderComponent: Received response:', response);
+        
         if (response.success) {
-          this.orders = response.data;
-          this.applyFilters();
-          console.log('Loaded orders:', this.orders);
+          console.log('OrderComponent: Got successful response with', response.data?.length, 'orders');
+          
+          // Check if order_items is defined for each order, if not, initialize to empty array
+          if (response.data) {
+            this.orders = response.data.map(order => {
+              // Ensure customer is properly set
+              if (!order.customer && order.customer_name) {
+                order.customer = {
+                  customer_id: order.customer_id,
+                  name: order.customer_name,
+                  email: order.customer_email || '',
+                  transaction_count: order.transaction_count || 0,
+                  total_spent: 0,
+                  created_at: ''
+                };
+              }
+              
+              return {
+                ...order,
+                order_items: order.order_items || []
+              };
+            });
+            
+            this.applyFilters();
+            console.log('OrderComponent: After filtering:', this.filteredOrders.length, 'orders');
+          } else {
+            this.orders = [];
+            this.applyFilters();
+          }
         } else {
-          this.error = 'Failed to load orders. Please try again.';
+          console.error('OrderComponent: API returned error:', response);
+          this.error = response.error || 'Failed to load orders. Please try again.';
         }
       },
       error: (error) => {
+        console.error('OrderComponent: Error from API call:', error);
         this.isLoading = false;
         this.error = 'Failed to connect to the server. Please check your connection.';
-        console.error('Error fetching orders:', error);
       }
     });
   }
 
+  // Handle search input
   onSearch(event: Event): void {
     const target = event.target as HTMLInputElement;
     this.searchTerm = target.value;
@@ -230,6 +287,7 @@ export class OrderComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Format currency for display
   formatCurrency(amount: number): string {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -237,12 +295,14 @@ export class OrderComponent implements OnInit, OnDestroy {
     }).format(amount);
   }
 
+  // Format date for display
   formatDate(date: string): string {
     return new Date(date).toLocaleDateString();
   }
 
+  // Get CSS class for status badges
   getStatusClass(status: string): string {
-    switch (status.toLowerCase()) {
+    switch (status?.toLowerCase() || '') {
       case 'pending':
         return 'bg-yellow-100 text-yellow-800';
       case 'accepted':
@@ -255,25 +315,38 @@ export class OrderComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Capitalize first letter of text
   capitalizeFirstLetter(text: string): string {
     if (!text) return '';
     return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
   }
 
+  // Navigate to order details
   viewOrderDetails(order: Order): void {
     this.router.navigate(['/order/detail', order.order_id]);
   }
 
+  // Contact buyer
   contactBuyer(order: Order): void {
+    // Make sure customer object exists
     if (!order.customer) {
-      this.error = 'Customer information is missing';
-      return;
+      // Create default customer object
+      order.customer = {
+        customer_id: 0,
+        name: order.customer_name || 'Unknown Customer',
+        email: order.customer_email || '',
+        phone: '',
+        total_spent: 0,
+        transaction_count: 0,
+        created_at: new Date().toISOString()
+      };
+      console.warn('Customer information missing for order:', order.order_id);
     }
 
     this.router.navigate(['/order/message'], {
       queryParams: {
         customerId: order.customer.customer_id,
-        customerName: order.customer.name,
+        customerName: order.customer.name || 'Customer',
         orderId: order.order_id
       }
     });

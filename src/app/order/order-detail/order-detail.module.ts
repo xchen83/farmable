@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 
-// 正确导入路径
+// Import the component with the correct path
 import { OrderDetailComponent } from './order-detail.component';
 
 const routes: Routes = [
@@ -17,7 +17,7 @@ const routes: Routes = [
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
-    // OrderDetailComponent 是 standalone 组件，不需要在这里导入
+    // OrderDetailComponent is standalone, so it doesn't need to be declared here
   ],
   exports: [RouterModule]
 })

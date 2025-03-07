@@ -1,89 +1,162 @@
 // src/app/services/order.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, of, tap } from 'rxjs';
-import { 
-  Order, 
-  OrderItem, 
-  OrderResponse, 
-  OrderDetailResponse 
-} from '../models/order.model';
+import { Observable, of } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
+import { Order } from '../order/order.types';
 
 @Injectable({
   providedIn: 'root'
 })
 export class OrderService {
-  // 后端 API 基础 URL
+  // API base URL - Ensure this matches your backend structure exactly
   private apiUrl = 'https://farmable-backend.xchen83.workers.dev/api';
 
-  constructor(private http: HttpClient) { }
-
-  // 获取所有订单
-  getOrders(): Observable<OrderResponse> {
-    console.log('Fetching orders from API...');
-    return this.http.get<OrderResponse>(`${this.apiUrl}/orders`).pipe(
-      tap(response => console.log('Received orders data:', response)),
-      catchError(error => {
-        console.error('Error fetching orders:', error);
-        // 返回一个带有错误信息的模拟响应
-        return of({ success: false, data: [] });
-      })
-    );
+  constructor(private http: HttpClient) {
+    console.log('OrderService initialized with API URL:', this.apiUrl);
   }
 
-  // 获取单个订单详情
-  getOrderById(id: number): Observable<OrderDetailResponse> {
-    console.log(`Fetching order details for order #${id}`);
-    return this.http.get<OrderDetailResponse>(`${this.apiUrl}/orders/${id}`).pipe(
-      tap(response => console.log('Received order detail:', response)),
-      catchError(error => {
-        console.error(`Error fetching order #${id}:`, error);
-        return of({ 
-          success: false, 
-          data: { 
-            order: null as any, 
-            items: [] 
-          } 
-        });
-      })
-    );
+  /**
+   * Get all orders
+   */
+  getOrders(): Observable<{success: boolean, data: Order[], error?: string}> {
+    console.log('Fetching orders from API:', `${this.apiUrl}/orders`);
+    return this.http.get<{success: boolean, data: Order[]}>(`${this.apiUrl}/orders`)
+      .pipe(
+        tap(response => {
+          console.log('API Response:', response);
+          
+          // Ensure customer and order_items are properly formatted
+          if (response.success && response.data) {
+            response.data.forEach(order => {
+              // Make sure customer object is properly formatted
+              if (order.customer_name && !order.customer) {
+                order.customer = {
+                  customer_id: order.customer_id,
+                  name: order.customer_name,
+                  email: order.customer_email || '',
+                  transaction_count: order.transaction_count || 0,
+                  total_spent: 0,
+                  created_at: ''
+                };
+              }
+              
+              // Make sure order_items is initialized
+              if (!order.order_items) {
+                order.order_items = [];
+              }
+            });
+          }
+        }),
+        catchError(error => {
+          console.error('API Error Details:', error);
+          // Return a default response instead of throwing error
+          return of({success: false, data: [], error: error.message});
+        })
+      );
   }
 
-  // 搜索订单
-  searchOrders(term: string): Observable<OrderResponse> {
-    return this.http.get<OrderResponse>(`${this.apiUrl}/orders?search=${term}`).pipe(
-      catchError(error => {
-        console.error('Error searching orders:', error);
-        return of({ success: false, data: [] });
-      })
-    );
+  /**
+   * Get order by ID
+   */
+  getOrderById(orderId: number): Observable<{success: boolean, data: any, error?: string}> {
+    console.log('Fetching order details from API:', `${this.apiUrl}/orders/${orderId}`);
+    return this.http.get<{success: boolean, data: any}>(`${this.apiUrl}/orders/${orderId}`)
+      .pipe(
+        tap(response => {
+          console.log('Order Details Response:', response);
+          
+          // Ensure data formatting is correct
+          if (response.success && response.data) {
+            if (response.data.order && response.data.order.customer_name && !response.data.order.customer) {
+              response.data.order.customer = {
+                customer_id: response.data.order.customer_id,
+                name: response.data.order.customer_name,
+                email: response.data.order.customer_email || '',
+                transaction_count: response.data.order.transaction_count || 0,
+                total_spent: 0,
+                created_at: ''
+              };
+            }
+          }
+        }),
+        catchError(error => {
+          console.error('Error fetching order details:', error);
+          return of({success: false, data: null, error: error.message});
+        })
+      );
   }
 
-  // 更新订单状态
-  updateOrderStatus(orderId: number, status: string): Observable<any> {
-    return this.http.put(`${this.apiUrl}/orders/${orderId}/status`, { status }).pipe(
-      tap(response => console.log(`Updated order #${orderId} status:`, response)),
-      catchError(error => {
-        console.error(`Error updating order #${orderId}:`, error);
-        return of({ success: false, error: error.message });
-      })
-    );
+  /**
+   * Update order status
+   */
+  updateOrderStatus(orderId: number, status: string): Observable<{success: boolean, error?: string}> {
+    console.log('Updating order status:', orderId, status);
+    return this.http.put<{success: boolean}>(`${this.apiUrl}/orders/${orderId}/status`, { status })
+      .pipe(
+        tap(response => console.log('Update status response:', response)),
+        catchError(error => {
+          console.error('Error updating order status:', error);
+          return of({success: false, error: error.message});
+        })
+      );
   }
 
-  // 联系买家 (发送消息)
-  sendMessageToBuyer(orderId: number, customerId: number, message: string): Observable<any> {
-    const messageData = {
-      order_id: orderId,
-      customer_id: customerId,
-      message: message
-    };
+  /**
+   * Create a new order
+   */
+  createOrder(orderData: any): Observable<{success: boolean, id?: number, error?: string}> {
+    console.log('Creating order with data:', orderData);
+    return this.http.post<{success: boolean, id?: number}>(`${this.apiUrl}/orders`, orderData)
+      .pipe(
+        tap(response => console.log('Create order response:', response)),
+        catchError(error => {
+          console.error('Error creating order:', error);
+          return of({success: false, error: error.message});
+        })
+      );
+  }
+
+  /**
+   * Send message to buyer - this endpoint may not exist in your backend yet
+   */
+  sendMessageToBuyer(orderId: number, customerId: number, message: string): Observable<{success: boolean, message?: string, error?: string}> {
+    // This is a mock implementation since your backend may not have this endpoint
+    console.log('Mock: Sending message to buyer:', {orderId, customerId, message});
     
-    return this.http.post(`${this.apiUrl}/messages`, messageData).pipe(
-      tap(response => console.log('Message sent:', response)),
-      catchError(error => {
-        console.error('Error sending message:', error);
-        // 模拟成功响应以便前端开发
-        return of({ success: true, message: 'Message sent successfully' });
+    // Return a success response - replace with actual API call when available
+    return of({
+      success: true, 
+      message: 'Message sent successfully (simulated)'
+    }).pipe(
+      tap(response => console.log('Send message response:', response))
+    );
+  }
+
+  /**
+   * Search orders - this endpoint may not exist in your backend yet
+   */
+  searchOrders(searchTerm: string): Observable<{success: boolean, data: Order[], error?: string}> {
+    // This is a workaround that fetches all orders and filters them client-side
+    console.log('Searching orders:', searchTerm);
+    return this.getOrders().pipe(
+      map(response => {
+        if (response.success && response.data) {
+          // Filter orders client-side
+          const filteredOrders = response.data.filter(order => 
+            (order.customer?.name?.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            order.order_id.toString().includes(searchTerm) ||
+            order.order_items?.some(item => 
+              item.product?.productName?.toLowerCase().includes(searchTerm.toLowerCase())
+            )
+          );
+          
+          return {
+            success: true,
+            data: filteredOrders
+          };
+        }
+        return response;
       })
     );
   }
