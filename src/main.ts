@@ -11,7 +11,5 @@ bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(routes),
     provideHttpClient(),
-    // 使用模拟服务替代真实服务
-    { provide: OrderService, useClass: MockOrderService }
   ]
 }).catch(err => console.error(err));

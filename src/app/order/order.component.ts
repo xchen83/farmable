@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faSearch, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import { OrderService } from '../services/order.service';
-// 从order.types而不是models中导入Order接口
+// 从order.types导入Order接口
 import { Order } from '../order/order.types';
 import { interval, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';

@@ -11,7 +11,7 @@ import { Order, OrderResponse } from '../order/order.types';
 })
 export class OrderService {
   // API基础URL
-  private apiUrl = 'https://farmable-backend.yourdomain.workers.dev/api'; // 替换为你的实际API地址
+  private apiUrl = 'https://farmable-backend.xchen83.workers.dev/api'; // 替换为你的实际API地址
 
   constructor(private http: HttpClient) { }
 
