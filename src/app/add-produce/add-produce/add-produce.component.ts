@@ -6,6 +6,7 @@ import { ProductService } from '../../services/product.service';
 import { Product, PRODUCT_CATEGORIES } from '../../types/product.types';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { CurrentInventoryComponent } from '../../product/current-inventory/current-inventory.component';
 
 @Component({
   selector: 'app-add-produce',
@@ -80,8 +81,8 @@ export class AddProduceComponent {
   errorMessage: string | null = null;
 
   constructor(
-    private productService: ProductService,
-    private router: Router
+    private router: Router,
+    private productService: ProductService
   ) { }
 
   @HostListener('document:click', ['$event'])
@@ -137,6 +138,31 @@ export class AddProduceComponent {
     this.isShelfLifeUnitDropdownOpen = false;
   }
 
+  private isFormValid(): boolean {
+    if (!this.formData.productName || !this.formData.category || !this.formData.packUnit) {
+      this.errorMessage = 'Please fill in all required fields';
+      console.log('Missing required fields:', {
+        name: !this.formData.productName,
+        category: !this.formData.category,
+        packUnit: !this.formData.packUnit
+      });
+      return false;
+    }
+    return true;
+  }
+
+  private handleSuccess(): void {
+    this.loading = false;
+    // Navigate to inventory route
+    this.router.navigate(['/inventory']);
+  }
+
+  private handleError(error: Error): void {
+    console.error('Error adding produce:', error);
+    this.loading = false;
+    this.errorMessage = 'Failed to add produce. Please try again.';
+  }
+
   submitForm(): void {
     console.log('Submit button clicked');
 
@@ -159,32 +185,6 @@ export class AddProduceComponent {
         this.handleError(error);
       }
     });
-  }
-
-  private isFormValid(): boolean {
-    if (!this.formData.productName || !this.formData.category || !this.formData.packUnit) {
-      this.errorMessage = 'Please fill out all required fields.';
-      console.log('Missing required fields:', {
-        name: !this.formData.productName,
-        category: !this.formData.category,
-        packUnit: !this.formData.packUnit
-      });
-      return false;
-    }
-    return true;
-  }
-
-  private handleSuccess(): void {
-    this.loading = false;
-    this.router.navigate(['/product/current-inventory'], {
-      queryParams: { refresh: Date.now().toString() }
-    });
-  }
-
-  private handleError(error: Error): void {
-    console.error('Error adding product:', error);
-    this.loading = false;
-    this.errorMessage = 'Failed to add product. Please try again.';
   }
 
   onDragOver(event: DragEvent, index: number): void {
@@ -248,6 +248,11 @@ export class AddProduceComponent {
       this.productImages[index] = '';
       this.formData.productImage = this.productImages.filter(img => img).join(',');
     }
+  }
+
+  navigateToInventory(): void {
+    // Navigate to inventory route
+    this.router.navigate(['/inventory']);
   }
 
 }
