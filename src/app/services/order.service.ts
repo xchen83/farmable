@@ -10,7 +10,7 @@ import { Order, OrderResponse } from '../order/order.types';
 })
 export class OrderService {
   // API base URL - Make sure this matches your backend structure
-  private apiUrl = 'https://farmable-backend.xchen83.workers.dev';
+  private apiUrl = 'https://farmable-backend.xchen83.workers.dev/api';
 
   constructor(private http: HttpClient) { }
 
