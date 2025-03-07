@@ -1,10 +1,16 @@
-<div class="inventory-container">
-    <h1>Current Inventory</h1>
-
+<div class="inventory-container max-w-4xl mx-auto px-4">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold pt-4">Current Inventory</h1>
+        <button (click)="navigateToAddProduce()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+            Add Produce
+        </button>
+    </div>
     <div class="search-bar">
         <div class="search-input">
             <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
+                <path fill-rule="evenodd"
+                    d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
+                    clip-rule="evenodd" />
             </svg>
             <input type="text" placeholder="Looking for a specific product?">
         </div>
@@ -17,7 +23,7 @@
                     <h2>{{item.name}}</h2>
                     <div class="listing-status">
                         Listing Status: <span [class.active]="item.listingStatus === 'Active'"
-                                            [class.draft]="item.listingStatus === 'Draft'">{{item.listingStatus}}</span>
+                            [class.draft]="item.listingStatus === 'Draft'">{{item.listingStatus}}</span>
                     </div>
                 </div>
                 <button class="modify-btn">Modify</button>
@@ -25,7 +31,11 @@
 
             <div class="inventory-records" *ngIf="item.records.length > 0">
                 <div class="record" *ngFor="let record of item.records">
-                    <span class="record-dot"></span>
+                    <span class="relative flex size-3">
+                        <span
+                            class="absolute inline-flex h-full w-full animate-ping rounded-full bg-lime-400 opacity-100"></span>
+                        <span class="relative inline-flex size-3 rounded-full bg-lime-600"></span>
+                    </span>
                     <div class="record-amount">{{record.amount}}</div>
                     <div class="record-info">
                         <div class="record-type">{{record.type}}</div>
@@ -75,4 +85,68 @@
             </button>
         </div>
     </div>
-</div> 
+
+    <!-- Real Products Section -->
+    <div class="real-products-section mt-8">
+        <!-- Loading State -->
+        <div *ngIf="loading" class="text-center py-8">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto"></div>
+            <p class="mt-4 text-gray-600">Loading products...</p>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            {{ errorMessage }}
+        </div>
+
+        <!-- Products Grid -->
+        <div *ngIf="!loading && !errorMessage" class="inventory-items">
+            <div class="item-card" *ngFor="let product of realProducts" [attr.data-status]="'Active'">
+                <div class="item-header">
+                    <div class="item-title">
+                        <h2>{{product.productName}}</h2>
+                        <div class="listing-status">
+                            Listing Status: <span class="draft">Draft</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item-details">
+                    <div class="detail-row" *ngIf="product.category">
+                        <span class="detail-label">Category:</span>
+                        <span class="detail-value">{{product.category}}</span>
+                    </div>
+                    <div class="detail-row" *ngIf="product.price">
+                        <span class="detail-label">List Price:</span>
+                        <span class="detail-value">${{product.price}} / {{product.packUnit}}</span>
+                    </div>
+                    <div class="detail-row" *ngIf="product.shelfLife">
+                        <span class="detail-label">Shelf Life:</span>
+                        <span class="detail-value">{{product.shelfLife}} {{product.shelfLifeUnit}}</span>
+                    </div>
+                    <div class="detail-row" *ngIf="product.packUnit">
+                        <span class="detail-label">Sales Unit:</span>
+                        <span class="detail-value">{{product.packUnit}}</span>
+                    </div>
+                    <div class="detail-row description" *ngIf="product.description">
+                        <span class="detail-label">Description:</span>
+                        <span class="detail-value">{{product.description}}</span>
+                    </div>
+                </div>
+
+                <div class="item-images" *ngIf="product.productImage">
+                    <img [src]="product.productImage" [alt]="product.productName">
+                </div>
+
+                <button class="finish-listing-btn">
+                    Finish Product Information
+                </button>
+            </div>
+        </div>
+
+        <!-- No Products State -->
+        <div *ngIf="!loading && !errorMessage && realProducts.length === 0" class="text-center py-8 text-gray-600">
+            No products available in the database.
+        </div>
+    </div>
+</div>

@@ -13,7 +13,7 @@ export class SignInComponent {
   constructor(private router: Router) { }
 
   navigateToLogin() {
-    this.router.navigate(['/login']);
+    this.router.navigate(['/dashboard']);
   }
 
   navigateToRoleSelect() {

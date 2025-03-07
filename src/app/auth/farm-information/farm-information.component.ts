@@ -78,6 +78,15 @@ import { FormsModule } from '@angular/forms';
   `,
   styleUrls: ['../confirmation-page/confirmation-page.component.css'],
   styles: [`
+      .background-image {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
     .form-container input,
     .form-container select {
       width: 100%;

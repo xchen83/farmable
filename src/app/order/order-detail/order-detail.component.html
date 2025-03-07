@@ -68,8 +68,8 @@
                 <tr>
                     <th>Fulfillment status</th>
                     <td>
-                        <span class="status-icon" [class.status-success]="item.fulfillmentStatus" 
-                              [class.status-fail]="!item.fulfillmentStatus">
+                        <span class="status-icon" [class.status-success]="item.fulfillmentStatus"
+                            [class.status-fail]="!item.fulfillmentStatus">
                             {{item.fulfillmentStatus ? '✓' : '✕'}}
                         </span>
                     </td>
@@ -99,4 +99,4 @@
         <button class="btn-contact" (click)="onContactBuyer()">Contact Buyer</button>
         <button class="btn-accept" (click)="onAcceptOrder()">Accept Order</button>
     </div>
-</div> 
+</div>

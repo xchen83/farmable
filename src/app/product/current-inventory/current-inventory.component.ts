@@ -1,5 +1,10 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ProductService } from '../../services/product.service';
+import { Product } from '../../types/product.types';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { Router } from '@angular/router';
 
 interface InventoryRecord {
   amount: string;
@@ -25,11 +30,12 @@ interface InventoryItem {
 @Component({
   selector: 'app-current-inventory',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FontAwesomeModule],
   templateUrl: './current-inventory.component.html',
   styleUrls: ['./current-inventory.component.css']
 })
 export class CurrentInventoryComponent {
+  faPlus = faPlus;
   inventoryItems: InventoryItem[] = [
     {
       name: 'Fuji Apple',
@@ -67,7 +73,7 @@ export class CurrentInventoryComponent {
       quality: 'Grade A',
       outOfStockNotice: 'On',
       description: '✅ Naturally Sweet & Crisp – No need for added sugar!',
-      images: ['apple.jpg', 'apple-tree.jpg']
+      images: ['assets/img/apple-1.png', 'assets/img/apple-tree.png']
     },
     {
       name: 'Shiitake Mushroom',
@@ -80,7 +86,38 @@ export class CurrentInventoryComponent {
       quality: '',
       outOfStockNotice: 'Off',
       description: 'Our Shiitake Mushrooms are cultivated with care to bring you their...',
-      images: ['mushroom.jpg']
+      images: ['assets/img/mushroom.png']
     }
   ];
+
+  // Add properties for real products
+  realProducts: Product[] = [];
+  loading = true;
+  errorMessage: string | null = null;
+
+  constructor(private productService: ProductService, private router: Router) {
+    this.loadRealProducts();
+  }
+
+  loadRealProducts() {
+    this.loading = true;
+    this.errorMessage = null;
+
+    this.productService.getProducts().subscribe({
+      next: (products) => {
+        this.realProducts = products;
+        this.loading = false;
+        console.log('Real products loaded:', products);
+      },
+      error: (error) => {
+        this.errorMessage = 'Failed to load products';
+        this.loading = false;
+        console.error('Error loading products:', error);
+      }
+    });
+  }
+
+  navigateToAddProduce(): void {
+    this.router.navigate(['/add-produce']);
+  }
 } 

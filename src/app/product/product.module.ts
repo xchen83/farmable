@@ -13,6 +13,10 @@ const routes: Routes = [
   {
     path: 'inventory',
     component: CurrentInventoryComponent
+  },
+  {
+    path: 'added',
+    component: AddedProductComponent
   }
 ];
 
