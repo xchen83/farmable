@@ -2,27 +2,28 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
-// 从order.types导入Order接口
+import { catchError, map, tap } from 'rxjs/operators';
 import { Order, OrderResponse } from '../order/order.types';
 
 @Injectable({
   providedIn: 'root'
 })
 export class OrderService {
-  // API基础URL
-  private apiUrl = 'https://farmable-backend.xchen83.workers.dev/api'; // 替换为你的实际API地址
+  // API base URL - Make sure this matches your backend structure
+  private apiUrl = 'https://farmable-backend.xchen83.workers.dev';
 
   constructor(private http: HttpClient) { }
 
   /**
-   * 获取所有订单
+   * Get all orders
    */
   getOrders(): Observable<{success: boolean, data: Order[]}> {
+    console.log('Fetching orders from API:', `${this.apiUrl}/orders`);
     return this.http.get<{success: boolean, data: Order[]}>(`${this.apiUrl}/orders`)
       .pipe(
+        tap(response => console.log('API Response:', response)),
         map(response => {
-          // 确保每个订单对象都有customer属性和order_items属性
+          // Ensure each order object has customer and order_items properties
           if (response.success && response.data) {
             response.data = response.data.map(order => ({
               ...order,
@@ -40,18 +41,23 @@ export class OrderService {
           }
           return response;
         }),
-        catchError(this.handleError<{success: boolean, data: Order[]}>('getOrders', {success: false, data: []}))
+        catchError(error => {
+          console.error('API Error Details:', error);
+          return this.handleError<{success: boolean, data: Order[]}>('getOrders', {success: false, data: []})(error);
+        })
       );
   }
 
   /**
-   * 根据ID获取订单详情
+   * Get order by ID
    */
   getOrderById(orderId: number): Observable<{success: boolean, data: any}> {
+    console.log('Fetching order details from API:', `${this.apiUrl}/orders/${orderId}`);
     return this.http.get<{success: boolean, data: any}>(`${this.apiUrl}/orders/${orderId}`)
       .pipe(
+        tap(response => console.log('Order Details Response:', response)),
         map(response => {
-          // 确保订单对象有customer属性
+          // Ensure order object has customer property
           if (response.success && response.data && response.data.order) {
             response.data.order.customer = response.data.order.customer || { 
               customer_id: 0,
@@ -65,22 +71,30 @@ export class OrderService {
           }
           return response;
         }),
-        catchError(this.handleError<{success: boolean, data: any}>('getOrderById', {success: false, data: null}))
+        catchError(error => {
+          console.error('Error fetching order details:', error);
+          return this.handleError<{success: boolean, data: any}>('getOrderById', {success: false, data: null})(error);
+        })
       );
   }
 
   /**
-   * 更新订单状态
+   * Update order status
    */
   updateOrderStatus(orderId: number, status: string): Observable<{success: boolean}> {
+    console.log('Updating order status:', orderId, status);
     return this.http.put<{success: boolean}>(`${this.apiUrl}/orders/${orderId}/status`, { status })
       .pipe(
-        catchError(this.handleError<{success: boolean}>('updateOrderStatus', {success: false}))
+        tap(response => console.log('Update status response:', response)),
+        catchError(error => {
+          console.error('Error updating order status:', error);
+          return this.handleError<{success: boolean}>('updateOrderStatus', {success: false})(error);
+        })
       );
   }
 
   /**
-   * 发送消息给买家
+   * Send message to buyer
    */
   sendMessageToBuyer(orderId: number, customerId: number, message: string): Observable<{success: boolean}> {
     const data = {
@@ -88,20 +102,27 @@ export class OrderService {
       customerId,
       message
     };
+    console.log('Sending message to buyer:', data);
     return this.http.post<{success: boolean}>(`${this.apiUrl}/messages`, data)
       .pipe(
-        catchError(this.handleError<{success: boolean}>('sendMessageToBuyer', {success: false}))
+        tap(response => console.log('Message sent response:', response)),
+        catchError(error => {
+          console.error('Error sending message:', error);
+          return this.handleError<{success: boolean}>('sendMessageToBuyer', {success: false})(error);
+        })
       );
   }
 
   /**
-   * 搜索订单
+   * Search orders
    */
   searchOrders(searchTerm: string): Observable<{success: boolean, data: Order[]}> {
+    console.log('Searching orders:', searchTerm);
     return this.http.get<{success: boolean, data: Order[]}>(`${this.apiUrl}/orders/search?q=${searchTerm}`)
       .pipe(
+        tap(response => console.log('Search response:', response)),
         map(response => {
-          // 确保每个订单对象都有customer属性
+          // Ensure each order object has customer property
           if (response.success && response.data) {
             response.data = response.data.map(order => ({
               ...order,
@@ -119,17 +140,20 @@ export class OrderService {
           }
           return response;
         }),
-        catchError(this.handleError<{success: boolean, data: Order[]}>('searchOrders', {success: false, data: []}))
+        catchError(error => {
+          console.error('Error searching orders:', error);
+          return this.handleError<{success: boolean, data: Order[]}>('searchOrders', {success: false, data: []})(error);
+        })
       );
   }
 
   /**
-   * 错误处理
+   * Error handler
    */
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
       console.error(`${operation} failed:`, error);
-      // 返回空结果，让应用继续运行
+      // Return empty result to allow app to continue
       return of(result as T);
     };
   }

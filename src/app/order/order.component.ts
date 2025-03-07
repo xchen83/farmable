@@ -184,23 +184,28 @@ export class OrderComponent implements OnInit, OnDestroy {
   private loadOrders(): void {
     this.isLoading = true;
     this.error = null;
-
+  
+    console.log('OrderComponent: Loading orders...');
+  
     this.orderService.getOrders().subscribe({
       next: (response) => {
         this.isLoading = false;
+        console.log('OrderComponent: Received response:', response);
+        
         if (response.success) {
-          console.log('Received orders from API:', response.data);
+          console.log('OrderComponent: Got successful response with', response.data.length, 'orders');
           this.orders = response.data;
           this.applyFilters();
-          console.log('Processed orders:', this.orders);
+          console.log('OrderComponent: After filtering:', this.filteredOrders.length, 'orders');
         } else {
+          console.error('OrderComponent: API returned error:', response);
           this.error = 'Failed to load orders. Please try again.';
         }
       },
       error: (error) => {
+        console.error('OrderComponent: Error from API call:', error);
         this.isLoading = false;
         this.error = 'Failed to connect to the server. Please check your connection.';
-        console.error('Error fetching orders:', error);
       }
     });
   }
