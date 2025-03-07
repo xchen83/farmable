@@ -161,6 +161,11 @@ export class OrderComponent implements OnInit, OnDestroy {
     // Update filtered count
     this.filteredCount = this.filteredOrders.length;
     console.log(`Applied filters: ${this.filteredCount} orders remain`);
+    
+    // Debug customer info
+    this.filteredOrders.forEach((order, index) => {
+      console.log(`Order ${index} customer:`, order.customer);
+    });
   }
 
   // Start polling - Not used by default but kept for future use
@@ -217,10 +222,24 @@ export class OrderComponent implements OnInit, OnDestroy {
           
           // Check if order_items is defined for each order, if not, initialize to empty array
           if (response.data) {
-            this.orders = response.data.map(order => ({
-              ...order,
-              order_items: order.order_items || []
-            }));
+            this.orders = response.data.map(order => {
+              // Ensure customer is properly set
+              if (!order.customer && order.customer_name) {
+                order.customer = {
+                  customer_id: order.customer_id,
+                  name: order.customer_name,
+                  email: order.customer_email || '',
+                  transaction_count: order.transaction_count || 0,
+                  total_spent: 0,
+                  created_at: ''
+                };
+              }
+              
+              return {
+                ...order,
+                order_items: order.order_items || []
+              };
+            });
             
             this.applyFilters();
             console.log('OrderComponent: After filtering:', this.filteredOrders.length, 'orders');
@@ -314,8 +333,8 @@ export class OrderComponent implements OnInit, OnDestroy {
       // Create default customer object
       order.customer = {
         customer_id: 0,
-        name: 'Unknown Customer',
-        email: '',
+        name: order.customer_name || 'Unknown Customer',
+        email: order.customer_email || '',
         phone: '',
         total_spent: 0,
         transaction_count: 0,

@@ -83,14 +83,16 @@
 
         <div class="order-header-section flex flex-col gap-2 p-4">
             <div class="flex items-center justify-between">
-                <div class="order-header text-lg font-medium">{{ order.customer?.name || 'Customer' }}</div>
+                <div class="order-header text-lg font-medium">
+                    {{ order.customer?.name || order.customer_name || 'Customer' }}
+                </div>
                 <span
                     [class]="'status-badge px-3 rounded py-1.5 text-sm font-medium whitespace-nowrap ' + getStatusClass(order.status)">
                     {{ capitalizeFirstLetter(order.status) }}
                 </span>
             </div>
             <div class="order-subtext text-sm text-gray-600">
-                Total transactions: {{ order.customer?.transaction_count || 0 }} completed
+                Total transactions: {{ order.customer?.transaction_count || order.transaction_count || 0 }} completed
             </div>
         </div>
 
@@ -113,10 +115,10 @@
                         <th>System note</th>
                     </tr>
                     <tr *ngFor="let item of order.order_items || []">
-                        <td>{{ item.product?.productName || 'N/A' }}</td>
-                        <td>{{ item.requested_quantity }}{{ item.product?.packUnit || '' }}</td>
-                        <td>{{ item.fulfilled_quantity || 0 }}{{ item.product?.packUnit || '' }}</td>
-                        <td>{{ item.remaining_quantity || 0 }}{{ item.product?.packUnit || '' }}</td>
+                        <td>{{ item.product?.productName || item.productName || 'N/A' }}</td>
+                        <td>{{ item.requested_quantity }}{{ item.product?.packUnit || item.packUnit || '' }}</td>
+                        <td>{{ item.fulfilled_quantity || 0 }}{{ item.product?.packUnit || item.packUnit || '' }}</td>
+                        <td>{{ item.remaining_quantity || 0 }}{{ item.product?.packUnit || item.packUnit || '' }}</td>
                         <td class="status-icon" [ngClass]="{
                             'status-success': item.status === 'completed',
                             'status-fail': item.status === 'pending' || item.status === 'cancelled'

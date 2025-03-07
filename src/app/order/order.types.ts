@@ -2,12 +2,12 @@ export interface Product {
     product_id: number;
     productName: string;
     category: string;
-    shelfLife?: number;
-    shelfLifeUnit?: string;
+    shelfLife?: number | null;
+    shelfLifeUnit?: string | null;
     unlimitedShelfLife: boolean;
     packUnit: string;
-    description?: string;
-    productImage?: string;
+    description?: string | null;
+    productImage?: string | null;
 }
 
 export interface Customer {
@@ -31,7 +31,12 @@ export interface OrderItem {
     unit_price: number;
     status: string;
     system_note?: string;
-    product?: Product;  // Include related product data
+    product?: Product;      // Include related product data
+    
+    // For backward compatibility - sometimes these come directly
+    productName?: string;   // Product name from join
+    category?: string;      // Product category from join
+    packUnit?: string;      // Product packUnit from join
 }
 
 export interface Order {
@@ -41,11 +46,18 @@ export interface Order {
     required_date: string;
     total_amount: number;
     status: string;
-    customer?: Customer;     // Include related customer data
+    
+    // Customer data can be nested or flattened
+    customer?: Customer;      // Nested customer object
+    customer_name?: string;   // Flattened customer name
+    customer_email?: string;  // Flattened customer email
+    transaction_count?: number; // Flattened transaction count
+    
     order_items?: OrderItem[]; // Include related order items
 }
 
 export interface OrderResponse {
     success: boolean;
     data: Order[];
-} 
+    error?: string;
+}

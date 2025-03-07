@@ -1,6 +1,4 @@
 // src/app/models/order.model.ts
-// 修改这个文件使它与 order.types.ts 兼容
-
 export interface Product {
   product_id: number;
   productName: string;
@@ -34,7 +32,12 @@ export interface OrderItem {
   unit_price: number;
   status: string;
   system_note?: string;
-  product?: Product;  // 改为可选字段
+  product?: Product;  // Include related product data
+  
+  // Additional properties that may come directly from backend joins
+  productName?: string;  // For direct join with products table
+  category?: string;     // For direct join with products table
+  packUnit?: string;     // For direct join with products table
 }
 
 export interface Order {
@@ -44,8 +47,14 @@ export interface Order {
   required_date: string;
   total_amount: number;
   status: string;
-  customer?: Customer;     // 改为可选字段
-  order_items?: OrderItem[]; // 改为可选字段
+  customer?: Customer;     // Include related customer data
+  order_items?: OrderItem[]; // Include related order items
+  
+  // Additional properties that might come directly from backend
+  customer_name?: string;
+  customer_email?: string;
+  phone?: string;
+  transaction_count?: number;
 }
 
 export interface OrderResponse {

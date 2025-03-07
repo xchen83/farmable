@@ -23,7 +23,31 @@ export class OrderService {
     console.log('Fetching orders from API:', `${this.apiUrl}/orders`);
     return this.http.get<{success: boolean, data: Order[]}>(`${this.apiUrl}/orders`)
       .pipe(
-        tap(response => console.log('API Response:', response)),
+        tap(response => {
+          console.log('API Response:', response);
+          
+          // Ensure customer and order_items are properly formatted
+          if (response.success && response.data) {
+            response.data.forEach(order => {
+              // Make sure customer object is properly formatted
+              if (order.customer_name && !order.customer) {
+                order.customer = {
+                  customer_id: order.customer_id,
+                  name: order.customer_name,
+                  email: order.customer_email || '',
+                  transaction_count: order.transaction_count || 0,
+                  total_spent: 0,
+                  created_at: ''
+                };
+              }
+              
+              // Make sure order_items is initialized
+              if (!order.order_items) {
+                order.order_items = [];
+              }
+            });
+          }
+        }),
         catchError(error => {
           console.error('API Error Details:', error);
           // Return a default response instead of throwing error
@@ -39,7 +63,23 @@ export class OrderService {
     console.log('Fetching order details from API:', `${this.apiUrl}/orders/${orderId}`);
     return this.http.get<{success: boolean, data: any}>(`${this.apiUrl}/orders/${orderId}`)
       .pipe(
-        tap(response => console.log('Order Details Response:', response)),
+        tap(response => {
+          console.log('Order Details Response:', response);
+          
+          // Ensure data formatting is correct
+          if (response.success && response.data) {
+            if (response.data.order && response.data.order.customer_name && !response.data.order.customer) {
+              response.data.order.customer = {
+                customer_id: response.data.order.customer_id,
+                name: response.data.order.customer_name,
+                email: response.data.order.customer_email || '',
+                transaction_count: response.data.order.transaction_count || 0,
+                total_spent: 0,
+                created_at: ''
+              };
+            }
+          }
+        }),
         catchError(error => {
           console.error('Error fetching order details:', error);
           return of({success: false, data: null, error: error.message});

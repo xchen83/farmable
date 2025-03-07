@@ -28,7 +28,7 @@ import { Order, OrderItem } from '../../models/order.model';
     <!-- Order details -->
     <div *ngIf="!isLoading && !error && order">
       <div class="header">
-          <h1>{{(order.customer && order.customer.name) || restaurantName}}</h1>
+          <h1>{{(order.customer && order.customer.name) || order.customer_name || restaurantName}}</h1>
           <button class="btn-contact-buyer" (click)="contactBuyer()">
               <span class="contact-icon">💬</span>
               Contact Buyer
@@ -76,11 +76,11 @@ import { Order, OrderItem } from '../../models/order.model';
               </div>
               <div class="info-row">
                   <span class="info-label">Previous transactions:</span>
-                  <span class="info-value">{{order.customer && order.customer.transaction_count ? order.customer.transaction_count : 0}} completed</span>
+                  <span class="info-value">{{(order.customer && order.customer.transaction_count) ? order.customer.transaction_count : (order.transaction_count || 0)}} completed</span>
               </div>
               <div class="info-row">
                   <span class="info-label">Email:</span>
-                  <span class="info-value">{{order.customer && order.customer.email ? order.customer.email : 'N/A'}}</span>
+                  <span class="info-value">{{(order.customer && order.customer.email) ? order.customer.email : (order.customer_email || 'N/A')}}</span>
               </div>
           </div>
       </div>
@@ -93,19 +93,19 @@ import { Order, OrderItem } from '../../models/order.model';
               <table class="request-table" *ngFor="let item of orderItems">
                   <tr>
                       <th>Product</th>
-                      <td>{{item.product ? item.product.productName : 'N/A'}}</td>
+                      <td>{{item.product ? item.product.productName : (item.productName || 'N/A')}}</td>
                   </tr>
                   <tr>
                       <th>Requested amount</th>
-                      <td>{{item.requested_quantity}} {{item.product ? item.product.packUnit : ''}}</td>
+                      <td>{{item.requested_quantity}} {{item.product ? item.product.packUnit : (item.packUnit || '')}}</td>
                   </tr>
                   <tr>
                       <th>Fulfilled amount</th>
-                      <td>{{item.fulfilled_quantity || 0}} {{item.product ? item.product.packUnit : ''}}</td>
+                      <td>{{item.fulfilled_quantity || 0}} {{item.product ? item.product.packUnit : (item.packUnit || '')}}</td>
                   </tr>
                   <tr>
                       <th>Remaining amount</th>
-                      <td>{{item.remaining_quantity || 'N/A'}} {{item.product ? item.product.packUnit : ''}}</td>
+                      <td>{{item.remaining_quantity || 'N/A'}} {{item.product ? item.product.packUnit : (item.packUnit || '')}}</td>
                   </tr>
                   <tr>
                       <th>Fulfillment status</th>
@@ -384,7 +384,7 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
   systemWarning: string | null = null;
 
   // API data 
-  order: Order | null = null;
+  order: any = null; // Changed to any to accommodate different property formats
   orderItems: OrderItem[] = [];
   canAcceptOrder: boolean = false;
   isLoading: boolean = true;
@@ -392,7 +392,7 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
   
   // Polling 
   private pollingSubscription: Subscription | null = null;
-  private pollingInterval = 15000; // 15秒轮询一次
+  private pollingInterval = 15000; // 15 seconds polling
 
   constructor(
     private route: ActivatedRoute,
@@ -417,7 +417,7 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     this.stopPolling();
   }
 
-  // 开始轮询
+  // Start polling
   private startPolling(orderId: number): void {
     this.pollingSubscription = interval(this.pollingInterval)
       .pipe(
@@ -426,7 +426,7 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response) => {
           if (response.success && response.data && response.data.order) {
-            // 检查订单是否有变化
+            // Check if order has changed
             if (JSON.stringify(this.order) !== JSON.stringify(response.data.order) ||
                 JSON.stringify(this.orderItems) !== JSON.stringify(response.data.items)) {
               console.log('Order details updated from polling');
@@ -436,12 +436,12 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('Error in polling order details:', error);
-          // 轮询出错不显示错误给用户，保持原数据
+          // Polling error doesn't show error to user, keep original data
         }
       });
   }
 
-  // 停止轮询
+  // Stop polling
   private stopPolling(): void {
     if (this.pollingSubscription) {
       this.pollingSubscription.unsubscribe();
@@ -456,6 +456,8 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     this.orderService.getOrderById(orderId).subscribe({
       next: (response) => {
         this.isLoading = false;
+        console.log('Order details response:', response);
+        
         if (response.success && response.data && response.data.order) {
           this.updateOrderData(response.data.order, response.data.items);
         } else {
@@ -470,17 +472,32 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  updateOrderData(order: Order, items: OrderItem[]) {
+  updateOrderData(order: any, items: OrderItem[]) {
     this.order = order;
+    console.log('Order data:', order);
+    
+    // Make sure customer is properly set
+    if (!order.customer && order.customer_name) {
+      order.customer = {
+        customer_id: order.customer_id,
+        name: order.customer_name,
+        email: order.customer_email || '',
+        transaction_count: order.transaction_count || 0,
+        total_spent: 0,
+        created_at: ''
+      };
+    }
+    
     this.orderItems = items || [];
+    console.log('Order items:', this.orderItems);
     
-    // 更新UI显示数据
-    this.restaurantName = order.customer?.name || 'Customer';
+    // Update UI display data
+    this.restaurantName = order.customer?.name || order.customer_name || 'Customer';
     
-    // 检查是否可以接受订单
+    // Check if order can be accepted
     this.checkIfOrderCanBeAccepted();
     
-    // 检查是否有警告信息
+    // Check for warnings
     this.checkForWarnings();
   }
 
@@ -490,19 +507,19 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
       return;
     }
     
-    // 如果订单已完成，则不能接受
+    // If order is completed, it can't be accepted
     if (this.order.status === 'completed') {
       this.canAcceptOrder = false;
       return;
     }
     
-    // 检查是否有不可用项目
+    // Check for unavailable items
     const hasUnavailableItems = this.orderItems.some(item => 
       item.status === 'cancelled' || 
       (item.remaining_quantity && item.remaining_quantity > 0)
     );
     
-    // 如果没有不可用项目，则可以接受订单
+    // Can accept order if no unavailable items
     this.canAcceptOrder = !hasUnavailableItems;
   }
 
@@ -512,7 +529,7 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
       return;
     }
     
-    // 检查是否有不可用项目
+    // Check for unavailable items
     const unavailableItems = this.orderItems.filter(item => 
       item.status === 'cancelled' || 
       (item.remaining_quantity && item.remaining_quantity > 0)
@@ -526,14 +543,18 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
   }
 
   contactBuyer() {
-    if (!this.order || !this.order.customer) {
+    if (!this.order) {
       return;
     }
     
+    // Ensure customer data is available
+    const customerId = this.order.customer?.customer_id || this.order.customer_id;
+    const customerName = this.order.customer?.name || this.order.customer_name || 'Customer';
+    
     this.router.navigate(['/order/message'], { 
       queryParams: { 
-        customerId: this.order.customer.customer_id,
-        customerName: this.order.customer.name,
+        customerId: customerId,
+        customerName: customerName,
         orderId: this.order.order_id
       }
     });
@@ -544,15 +565,13 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
       return;
     }
     
-    // 设置加载状态
     this.isLoading = true;
     
-    // 调用服务更新订单状态
     this.orderService.updateOrderStatus(this.order.order_id, 'accepted').subscribe({
       next: (response) => {
         this.isLoading = false;
         if (response.success) {
-          // 更新成功，重新加载订单详情
+          // Success, reload order details
           this.loadOrderDetails(this.order!.order_id);
         } else {
           this.error = 'Failed to update order status. Please try again.';
@@ -570,7 +589,7 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     this.router.navigate(['/order']);
   }
 
-  // 辅助方法
+  // Helper methods
   formatCurrency(amount: number): string {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -583,7 +602,7 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
   }
 
   getStatusClass(status: string): string {
-    switch (status.toLowerCase()) {
+    switch (status?.toLowerCase()) {
       case 'pending':
         return 'bg-yellow-100 text-yellow-800';
       case 'accepted':
