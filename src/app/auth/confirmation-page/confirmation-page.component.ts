@@ -16,16 +16,33 @@ import { FormsModule } from '@angular/forms';
       z-index: 1;
       margin-bottom: 2rem;
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 1rem;
+      border-radius: 12px;
     }
-
     .progress-bar-wrapper {
       display: flex;
       align-items: center;
-      width: 100%;
-      max-width: 200px;
-      margin-bottom: 16px;
+      flex: 1;
+      min-width: 150px;
+      max-width: 300px;
+    }
+    .progress-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background: white;
     }
 
     .progress-circle {

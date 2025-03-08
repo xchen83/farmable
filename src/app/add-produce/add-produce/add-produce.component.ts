@@ -153,8 +153,10 @@ export class AddProduceComponent {
 
   private handleSuccess(): void {
     this.loading = false;
-    // Navigate to inventory route
-    this.router.navigate(['/inventory']);
+    // Navigate to inventory route with refresh parameter
+    this.router.navigate(['/inventory'], {
+      queryParams: { refresh: Date.now() }
+    });
   }
 
   private handleError(error: Error): void {
@@ -251,8 +253,10 @@ export class AddProduceComponent {
   }
 
   navigateToInventory(): void {
-    // Navigate to inventory route
-    this.router.navigate(['/inventory']);
+    // Navigate to inventory route with refresh parameter
+    this.router.navigate(['/inventory'], {
+      queryParams: { refresh: Date.now() }
+    });
   }
 
 }

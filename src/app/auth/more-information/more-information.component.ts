@@ -24,29 +24,31 @@ interface Section {
     <div class="register-container">
     <img class="background-image fixed inset-0 w-screen h-screen object-cover -z-10" src="assets/img/0.png" alt="background" />
       <div class="progress-container">
-        <div class="progress-circle" [class.active]="true">
-          <div class="progress-ring" style="clip-path: circle(100% at 50% 50%)"></div>
-          <span class="progress-text">1</span>
-        </div>
-        <div class="progress-line">
-          <div class="progress-bar" style="width: 100%"></div>
-        </div>
-        <div class="progress-circle" [class.active]="true">
-          <div class="progress-ring" style="clip-path: circle(100% at 50% 50%)"></div>
-          <span class="progress-text">2</span>
-        </div>
-        <div class="progress-line">
-          <div class="progress-bar" style="width: 100%"></div>
-        </div>
-        <div class="progress-circle" [class.active]="true">
-          <div class="progress-ring" style="clip-path: circle(100% at 50% 50%)"></div>
-          <span class="progress-text">3</span>
+        <div class="progress-bar-wrapper">
+          <div class="progress-circle" [class.active]="progress >= 1">
+            <div class="progress-ring" [style.clip-path]="progressClipPath(progress >= 1 ? 3 : 0)"></div>
+            <span class="progress-text">1</span>
+          </div>
+          <div class="progress-line">
+            <div class="progress-bar" [style.width]="progress >= 2 ? '100%' : '0%'"></div>
+          </div>
+          <div class="progress-circle" [class.active]="progress >= 2">
+            <div class="progress-ring" [style.clip-path]="progressClipPath(progress >= 2 ? 3 : 0)"></div>
+            <span class="progress-text">2</span>
+          </div>
+          <div class="progress-line">
+            <div class="progress-bar" [style.width]="progress >= 3 ? '100%' : '0%'"></div>
+          </div>
+          <div class="progress-circle" [class.active]="progress >= 3">
+            <div class="progress-ring" [style.clip-path]="progressClipPath(progress >= 3 ? 3 : 0)"></div>
+            <span class="progress-text">3</span>
+          </div>
         </div>
         <div class="register-header">
-          <h2>More Information</h2>
+          <h2>{{ getCurrentStepTitle() }}</h2>
           <div class="step-info">
             <span class="next-label">Next:</span>
-            <span class="step-detail">Publish</span>
+            <span class="step-detail">{{ getNextStepName() }}</span>
           </div>
         </div>
       </div>
@@ -108,6 +110,23 @@ interface Section {
       position: relative;
       z-index: 1;
       margin-bottom: 2rem;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+    .progress-bar-wrapper {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      min-width: 150px;
+      max-width: 300px;
+      gap: 0;
     }
     .progress-circle {
       width: 40px;
@@ -117,23 +136,41 @@ interface Section {
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-right: 8px;
+      position: relative;
+      background: white;
+      flex-shrink: 0;
     }
     .progress-circle.active {
       border-color: #4CAF50;
+    }
+    .progress-ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: #4CAF50;
+      border-radius: 50%;
+      z-index: -1;
+    }
+    .progress-text {
+      z-index: 1;
+      color: #000;
     }
     .progress-line {
       height: 2px;
       background: #ddd;
       flex: 1;
+      min-width: 20px;
+      margin: 0 4px;
     }
     .progress-bar {
       height: 100%;
       background: #4CAF50;
+      transition: width 0.3s ease;
     }
     .register-header {
-      text-align: center;
-      margin-bottom: 16px;
+      text-align: left;
+      margin-bottom: 0;
+      flex: 1;
     }
     h2 {
       margin: 0;
@@ -277,6 +314,7 @@ interface Section {
   `]
 })
 export class MoreInformationComponent {
+  progress = 3; // Since this is the last step
   sections = [
     {
       title: "Farm's philosophy",
@@ -337,6 +375,21 @@ export class MoreInformationComponent {
       return section.options;
     }
     return section.options.slice(0, 3);
+  }
+
+  getCurrentStepTitle(): string {
+    return 'More Information';
+  }
+
+  getNextStepName(): string {
+    return 'Publish';
+  }
+
+  progressClipPath(value: number): string {
+    if (value >= 3) return 'circle(100% at 50% 50%)';
+    if (value >= 2) return 'circle(75% at 50% 50%)';
+    if (value >= 1) return 'circle(50% at 50% 50%)';
+    return 'circle(0% at 50% 50%)';
   }
 
   constructor(private router: Router) { }
